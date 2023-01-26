@@ -4,15 +4,20 @@
   "private": true,
   "scripts": {
     "android": "react-native run-android",
+    "build:ios": "react-native bundle --entry-file='index.js' --bundle-output='./ios/main.jsbundle' --dev=false --platform='ios'",
     "ios": "react-native run-ios",
     "start": "react-native start",
     "test": "jest",
     "lint": "eslint ."
   },
   "dependencies": {
+    "babel-plugin-transform-remove-console": "^6.9.4",
     "convert-string": "^0.1.0",
     "react": "17.0.2",
-    "react-native": "0.68.2"
+    "react-native": "0.68.2",
+    "react-native-ble-manager": "^8.6.0",
+    "react-native-vector-icons": "^9.2.0",
+    "recoil": "^0.7.6"
   },
   "devDependencies": {
     "@babel/core": "7.12.9",
