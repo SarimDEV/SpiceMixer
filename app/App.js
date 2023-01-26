@@ -9,13 +9,16 @@ import {
   useRecoilValue,
 } from 'recoil';
 import { Recipe } from './components/recipe/Recipe';
+import { IngredientInput } from './components/recipe-editor/IngredientInput';
+import { AmountInput } from './components/recipe-editor/AmountInput';
+import { IngredientRow } from './components/recipe-editor/IngredientRow';
 
 const App = () => {
   return (
     <RecoilRoot>
       <StatusBar barStyle="dark-content" />
       <SafeAreaView>
-        <Recipe />
+        <IngredientRow />
       </SafeAreaView>
     </RecoilRoot>
   );
