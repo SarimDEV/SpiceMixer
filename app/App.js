@@ -12,14 +12,14 @@ import { Recipe } from './components/recipe/Recipe';
 import { IngredientInput } from './components/recipe-editor/IngredientInput';
 import { AmountInput } from './components/recipe-editor/AmountInput';
 import { IngredientRow } from './components/recipe-editor/IngredientRow';
+import { Topbar } from './components/topbar/Topbar';
 
 const App = () => {
   return (
     <RecoilRoot>
       <StatusBar barStyle="dark-content" />
-      <SafeAreaView>
-        <IngredientRow />
-      </SafeAreaView>
+      <Topbar />
+      <SafeAreaView>{/* <IngredientRow /> */}</SafeAreaView>
     </RecoilRoot>
   );
 };
