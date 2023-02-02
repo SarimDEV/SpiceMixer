@@ -1,17 +1,25 @@
 import React from 'react';
 
-import { Text, View, StyleSheet, TouchableOpacity } from 'react-native';
+import { Text, View, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { COLORS } from '../../common';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 
-export const Recipe = () => {
+export const Recipe = ({ title }) => {
   return (
     <View style={styles.recipeContainer}>
-      <View style={styles.spicePhoto} />
+      <Image
+        style={styles.spicePhoto}
+        source={{
+          uri: 'https://www.thecuriouschickpea.com/wp-content/uploads/2018/08/chana-masala-2.jpg.webp',
+        }}
+      />
       <View style={styles.recipeDescContainer}>
         <View style={styles.textContainer}>
-          <Text style={styles.recipeTitle}>Channa Masala</Text>
-          <MaterialIcon name="view-headline" size={24} />
+          <View>
+            <Text style={styles.recipeTitle}>{title}</Text>
+            <Text style={styles.author}>Sahifa Shahid</Text>
+          </View>
+          <MaterialIcon name="favorite-border" size={24} />
         </View>
       </View>
     </View>
@@ -20,22 +28,21 @@ export const Recipe = () => {
 
 const styles = StyleSheet.create({
   recipeContainer: {
-    flexDirection: 'row',
+    // height: 150,
   },
   spicePhoto: {
-    height: 110,
-    width: 110,
+    height: 180,
     backgroundColor: COLORS.darkGrey,
   },
   recipeDescContainer: {
-    flexGrow: 1,
-    backgroundColor: COLORS.primary,
-    height: 110,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
+    marginTop: 8,
   },
   recipeTitle: {
     fontSize: 16,
+    fontWeight: '600',
+  },
+  author: {
+    fontSize: 12,
   },
   textContainer: {
     flexDirection: 'row',

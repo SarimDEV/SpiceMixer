@@ -36,7 +36,6 @@ export const AmountInput = () => {
 const styles = StyleSheet.create({
   input: {
     height: 40,
-    margin: 12,
     borderRadius: 5,
     padding: 10,
     backgroundColor: COLORS.darkGrey,

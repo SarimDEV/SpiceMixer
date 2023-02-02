@@ -18,6 +18,7 @@ export const IngredientInput = () => {
       value={text}
       onChangeText={onChangeText}
       placeholder={'Tumeric ...'}
+      autoFocus={true}
     />
   );
 };
@@ -25,7 +26,6 @@ export const IngredientInput = () => {
 const styles = StyleSheet.create({
   input: {
     height: 40,
-    margin: 12,
     borderRadius: 5,
     padding: 10,
     backgroundColor: COLORS.darkGrey,

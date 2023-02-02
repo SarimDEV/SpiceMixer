@@ -9,15 +9,23 @@ import {
   SafeAreaView,
 } from 'react-native';
 
-import { COLORS } from '../../common';
+import { COLORS, DIM } from '../../common';
+import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
+import { Logo } from '../../common/logo/Logo';
 
 export const Topbar = () => {
   return (
     <View style={style.container}>
       <SafeAreaView>
         <View style={style.headerContainer}>
-          <Text style={style.logoFont}>SpiceMixer</Text>
-          <View style={style.profileIcon} />
+          <Logo />
+          <View style={style.profileIcon}>
+            <MaterialIcon
+              name="person-outline"
+              size={24}
+              color={COLORS.darkGrey}
+            />
+          </View>
         </View>
       </SafeAreaView>
     </View>
@@ -26,22 +34,25 @@ export const Topbar = () => {
 
 const style = StyleSheet.create({
   container: {
-    backgroundColor: COLORS.darkGrey,
+    // backgroundColor: COLORS.darkGrey,
   },
   headerContainer: {
-    marginHorizontal: 32,
+    marginHorizontal: DIM.appMargin,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     height: 65,
   },
   logoFont: {
-    fontSize: 24,
+    fontSize: 42,
+    fontWeight: '700',
   },
   profileIcon: {
-    backgroundColor: 'green',
+    backgroundColor: 'black',
     borderRadius: 50,
     width: 40,
     height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

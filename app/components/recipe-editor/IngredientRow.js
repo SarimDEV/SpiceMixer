@@ -28,8 +28,10 @@ const styles = StyleSheet.create({
   },
   ingredientInputContainer: {
     flex: 4,
+    marginRight: 12,
   },
   amountInputContainer: {
     flex: 2,
+    marginLeft: 12,
   },
 });
