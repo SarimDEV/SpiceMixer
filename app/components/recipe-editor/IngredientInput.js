@@ -8,17 +8,19 @@ import {
   TextInput,
 } from 'react-native';
 import { COLORS } from '../../common';
+import { AppInput } from '../../common/input/AppInput';
 
 export const IngredientInput = () => {
   const [text, onChangeText] = useState('');
 
   return (
-    <TextInput
+    <AppInput
       style={styles.input}
       value={text}
       onChangeText={onChangeText}
       placeholder={'Tumeric ...'}
       autoFocus={true}
+      icon={'search'}
     />
   );
 };

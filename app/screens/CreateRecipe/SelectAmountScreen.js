@@ -14,6 +14,7 @@ import { COLORS, DIM } from '../../common';
 import { IngredientInput } from '../../components/recipe-editor/IngredientInput';
 import { Title } from '../../components/title/Title';
 import { amountData } from '../../data';
+import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 
 const Item = ({ title }) => (
   <TouchableOpacity style={styles.item}>
@@ -24,8 +25,8 @@ const Item = ({ title }) => (
 export const SelectAmountScreen = () => {
   return (
     <View style={styles.box}>
-      <View style={styles.headerContainer}>
-        <Title title={'Select Amount'} />
+      <View style={styles.description}>
+        <Text style={styles.descriptionText}>Select an amount</Text>
       </View>
       <FlatList
         data={amountData}
@@ -47,6 +48,9 @@ const styles = StyleSheet.create({
   description: {
     marginBottom: 8,
   },
+  descriptionFont: {
+    color: 'grey',
+  },
   headerContainer: {
     marginTop: 12,
     marginBottom: 24,
@@ -62,10 +66,11 @@ const styles = StyleSheet.create({
     marginHorizontal: 8,
     borderRadius: 5,
     borderBottomWidth: 2,
-    borderBottomColor: COLORS.darkGrey,
-    alignItems: 'center',
+    borderBottomColor: COLORS.primary,
+    // alignItems: 'center',
   },
   title: {
     fontSize: 16,
+    fontWeight: '500',
   },
 });

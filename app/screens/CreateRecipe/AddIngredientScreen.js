@@ -13,6 +13,7 @@ import {
 import { COLORS, DIM } from '../../common';
 import { IngredientInput } from '../../components/recipe-editor/IngredientInput';
 import { Title } from '../../components/title/Title';
+import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 const DATA = [
   {
     id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
@@ -31,17 +32,15 @@ const DATA = [
 const Item = ({ title }) => (
   <View style={styles.item}>
     <Text style={styles.title}>{title}</Text>
+    <MaterialIcon name="chevron-right" size={16} />
   </View>
 );
 
 export const AddIngredientScreen = () => {
   return (
     <View style={styles.box}>
-      <View style={styles.headerContainer}>
-        <Title title={'Add an Ingredient'} />
-      </View>
       <View style={styles.description}>
-        <Text>Search and select a spice</Text>
+        <Text style={styles.descriptionFont}>Search and select a spice</Text>
       </View>
       <IngredientInput />
       <FlatList
@@ -62,6 +61,9 @@ const styles = StyleSheet.create({
   },
   description: {
     marginBottom: 8,
+  },
+  descriptionFont: {
+    color: 'grey',
   },
   headerContainer: {
     marginTop: 12,
@@ -84,9 +86,12 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     textAlign: 'center',
     borderBottomWidth: 2,
-    borderBottomColor: COLORS.darkGrey,
+    borderBottomColor: COLORS.primary,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   title: {
     fontSize: 16,
+    fontWeight: '500',
   },
 });

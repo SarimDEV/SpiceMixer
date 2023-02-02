@@ -23,14 +23,14 @@ const App = () => {
   return (
     <RecoilRoot>
       <StatusBar barStyle="dark-content" />
-      {/* <Topbar /> */}
+      <Topbar />
       <SafeAreaView style={styles.appContainer}>
         {/* <SignupScreen /> */}
-        <LoginScreen />
+        {/* <LoginScreen /> */}
         {/* <Recipe /> */}
         {/* <SearchRecipeScreen /> */}
         {/* <AddIngredientScreen /> */}
-        {/* <SelectAmountScreen /> */}
+        <SelectAmountScreen />
       </SafeAreaView>
     </RecoilRoot>
   );
