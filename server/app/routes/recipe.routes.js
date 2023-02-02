@@ -3,22 +3,12 @@ module.exports = app => {
   var router = require("express").Router();
 
   router.post("/create", recipe.create);
-  // router.get("/", recipe.findAll);
+  router.get("/:id", recipe.findOne);
+  router.put("/update/:id", recipe.update);
+  router.delete("/delete/:id", recipe.delete);
   router.put("/publish/:id", recipe.publishRecipe)
   router.put("/unpublish/:id", recipe.unpublishRecipe)
   router.get("/publish", recipe.findAllPublished);
-
-  // // Retrieve a single recipe with id
-  // router.get("/:id", recipe.findOne);
-
-  // // Update a recipe with id
-  // router.put("/:id", recipe.update);
-
-  // // Delete a recipe with id
-  // router.delete("/:id", recipe.delete);
-
-  // // Create a new recipe
-  // router.delete("/", recipe.deleteAll);
 
   app.use("/api/recipe", router);
 };

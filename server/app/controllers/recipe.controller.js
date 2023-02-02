@@ -7,7 +7,6 @@ exports.create = async (req, res) => {
     res.status(400).send({ message: "Content can not be empty!" });
     return;
   }
-
   const uid = req.body.uid
   const recipe = new Recipe({
     title: req.body.title,
@@ -21,119 +20,101 @@ exports.create = async (req, res) => {
     const response = await recipe.save();
     recipeId = response._id
   } catch (error) {
-    res.status(500).send({ message: error.message || "Error occured while creating recipe." })
+    return res.status(500).send({ message: error.message || "Error occured while creating recipe." })
   }
 
   try {
     const response = await User.findOneAndUpdate({ uid }, { $push: { recipes: recipeId }}); 
     if (response.length === 0) {
-        res.status(404).send({ message: "Unable to update user with id=" + id + " with new recipe" });
+        res.status(404).send({ message: `Unable to update user with id=${id} with new recipe` });
     }
     res.send({ message: "Successfully created recipe" })
   } catch (error) {
-    res.status(500).send({ message: error.message || "Error updating user with id=" + id + " with new recipe" });
+    res.status(500).send({ message: error.message || `Error updating user with id=${id} with new recipe` });
   }
 };
 
-// Retrieve all Recipes from the database.
-// exports.findAll = (req, res) => {
-//   const title = req.query.title;
-//   var condition = title ? { title: { $regex: new RegExp(title), $options: "i" } } : {};
+exports.findOne = async (req, res) => {
+  if (!req.params.id) {
+    res.status(400).send({ message: `Content cannot be empty` });
+  }
+  const id = req.params.id;
 
-//   Recipe.find(condition)
-//     .then(data => {
-//       res.send(data);
-//     })
-//     .catch(err => {
-//       res.status(500).send({
-//         message:
-//           err.message || "Some error occurred while retrieving recipes."
-//       });
-//     });
-// };
+  try {
+    const response = await Recipe.findById(id)
+    if (!response) {
+      res.status(404).send({ message: `Error retreving recipe with id=${id}. Recipe not found` });
+    }
+    else res.send(response)
+  } catch(error) {
+    res.status(500).send({ message: error.message || `Error retrieving recipe with id=${id}` });
+  }
+};
 
-// Find a single Recipe with an id
-// exports.findOne = (req, res) => {
-//   const id = req.params.id;
+exports.update = async (req, res) => {
+  if (!req.body.title || !req.body.ingredients || !req.body.description || !req.params.id) {
+    return res.status(400).send({ message: "Content cannot be empty!"});
+  }
+  const id = req.params.id;
+  const update = {
+    title: req.body.title,
+    ingredients: req.body.ingredients,
+    description: req.body.description
+  }
 
-//   Recipe.findById(id)
-//     .then(data => {
-//       if (!data)
-//         res.status(404).send({ message: "Not found Recipe with id " + id });
-//       else res.send(data);
-//     })
-//     .catch(err => {
-//       res
-//         .status(500)
-//         .send({ message: "Error retrieving Recipe with id=" + id });
-//     });
-// };
+  try {
+    const response = await Recipe.findByIdAndUpdate(id, update)
+    if (!response) {
+      res.status(404).send({
+        message: `Cannot update recipe with id=${id}. Recipe not found!`
+      });
+    } 
+    else res.send({ message: "Recipe was updated successfully." });
+  } catch(error) {
+    res.status(500).send({
+      message: error.message || `Error updating recipe with id=${id}`
+    });
+  }
+};
 
-// Update a Recipe by the id in the request
-// exports.update = (req, res) => {
-//   if (!req.body) {
-//     return res.status(400).send({
-//       message: "Data to update can not be empty!"
-//     });
-//   }
+exports.delete = async (req, res) => {
+  if (!req.params.id || !req.body.uid) {
+    res.status(400).send({ message: `Content cannot be empty` });
+  }
+  const recipeId = req.params.id;
+  const uid = req.body.uid
 
-//   const id = req.params.id;
+  try {
+    const response = await Recipe.findByIdAndRemove(recipeId)
+    if (!response) {
+      return res.status(404).send({
+        message: `Recipe was not found, error deleting recipe with id=${recipeId}`
+      });
+    }
+  } catch (error) {
+    return res.status(500).send({
+      message: error.message || `Error deleting recipe with id=${recipeId}`
+    });
+  }
 
-//   Recipe.findByIdAndUpdate(id, req.body, { useFindAndModify: false })
-//     .then(data => {
-//       if (!data) {
-//         res.status(404).send({
-//           message: `Cannot update Recipe with id=${id}. Maybe Recipe was not found!`
-//         });
-//       } else res.send({ message: "Recipe was updated successfully." });
-//     })
-//     .catch(err => {
-//       res.status(500).send({
-//         message: "Error updating Recipe with id=" + id
-//       });
-//     });
-// };
-
-// Delete a Recipe with the specified id in the request
-// exports.delete = (req, res) => {
-//   const id = req.params.id;
-
-//   Recipe.findByIdAndRemove(id, { useFindAndModify: false })
-//     .then(data => {
-//       if (!data) {
-//         res.status(404).send({
-//           message: `Cannot delete Recipe with id=${id}. Maybe Recipe was not found!`
-//         });
-//       } else {
-//         res.send({
-//           message: "Recipe was deleted successfully!"
-//         });
-//       }
-//     })
-//     .catch(err => {
-//       res.status(500).send({
-//         message: "Could not delete Recipe with id=" + id
-//       });
-//     });
-// };
-
-// Delete all Recipes from the database.
-// exports.deleteAll = (req, res) => {
-//   Recipe.deleteMany({})
-//     .then(data => {
-//       res.send({
-//         message: `${data.deletedCount} Recipes were deleted successfully!`
-//       });
-//     })
-//     .catch(err => {
-//       res.status(500).send({
-//         message:
-//           err.message || "Some error occurred while removing all recipes."
-//       });
-//     });
-// };
+  try {
+    const response = await User.findOneAndUpdate({ uid }, { $pullAll: { recipes: [ recipeId ] }});
+    if (!response) {
+      res.status(404).send({
+        message: `Recipe was not found, error deleting recipe from user table with id=${recipeId}`
+      });
+    } else res.send({ response, message: "Successfully deleted recipe" });
+  } catch(error) {
+    res.status(500).send({
+      message: error.message || `Error updating user table with delete recipe with id=${recipeId}`
+    });
+  }
+};
 
 exports.publishRecipe = async (req, res) => {
+  if (!req.params.id) {
+    res.status(400).send({ message: `Content cannot be empty` });
+  }
   const id = req.params.id
   const update = { published: true }
 
@@ -151,6 +132,9 @@ exports.publishRecipe = async (req, res) => {
 }
 
 exports.unpublishRecipe = async (req, res) => {
+  if (!req.params.id) {
+    res.status(400).send({ message: `Content cannot be empty` });
+  }
   const id = req.params.id
   const update = { published: false }
 
@@ -167,7 +151,7 @@ exports.unpublishRecipe = async (req, res) => {
   }
 }
 
-exports.findAllPublished = async (req, res) => {
+exports.findAllPublished = async (_, res) => {
   try {
     const response = await Recipe.find({ published: true })
     if (!response ) {
