@@ -1,7 +1,7 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 
-import { Text, View, StyleSheet } from 'react-native';
+import { Text, View, StyleSheet, KeyboardAvoidingView } from 'react-native';
 
 import { COLORS, DIM } from '../../common';
 import { AppButton } from '../../common/button/AppButton';
@@ -50,52 +50,58 @@ export const LoginScreen = () => {
   };
 
   return (
-    <View style={styles.box}>
-      <View style={styles.logoContainer}>
-        <Logo />
-      </View>
-      <View style={styles.inputContainer}>
-        <AppInput
-          icon="mail-outline"
-          placeholder="example@example.com"
-          autoFocus={true}
-          text={email}
-          onChangeText={setEmail}
-          autoCapitalize={'none'}
-          autoComplete={'off'}
-        />
+    <KeyboardAvoidingView style={styles.kac} behavior={'padding'}>
+      <View style={styles.box}>
+        <View style={styles.logoContainer}>
+          <Logo />
+        </View>
+        <View style={styles.inputContainer}>
+          <AppInput
+            icon="mail-outline"
+            placeholder="example@example.com"
+            autoFocus={true}
+            text={email}
+            onChangeText={setEmail}
+            autoCapitalize={'none'}
+            autoComplete={'off'}
+          />
+          <Spacer />
+          <AppInput
+            icon="lock-outline"
+            placeholder="Password"
+            autoFocus={false}
+            text={password}
+            onChangeText={setPassword}
+            autoCapitalize={'none'}
+            autoComplete={'off'}
+            secureTextEntry={true}
+          />
+          {error ? <Text style={styles.errorText}>{error}</Text> : undefined}
+        </View>
+        <AppButton label={'Create an Account'} />
         <Spacer />
-        <AppInput
-          icon="lock-outline"
-          placeholder="Password"
-          autoFocus={false}
-          text={password}
-          onChangeText={setPassword}
-          autoCapitalize={'none'}
-          autoComplete={'off'}
-          secureTextEntry={true}
+        <AppButton
+          label={'Login'}
+          primary
+          onPress={() =>
+            handleLogin(email, password, successCallback, signUpError)
+          }
         />
-        {error ? <Text style={styles.errorText}>{error}</Text> : undefined}
+        <Text>{user ? user.uid : 'no user'}</Text>
       </View>
-      <AppButton label={'Create an Account'} />
-      <Spacer />
-      <AppButton
-        label={'Login'}
-        primary
-        onPress={() =>
-          handleLogin(email, password, successCallback, signUpError)
-        }
-      />
-      <Text>{user ? user.uid : 'no user'}</Text>
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
+  kac: {
+    flex: 1,
+  },
   box: {
     marginHorizontal: 3 * DIM.appMargin,
     flex: 1,
     justifyContent: 'center',
+    marginBottom: 52,
   },
   inputContainer: {
     marginBottom: 52,

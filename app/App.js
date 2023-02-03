@@ -18,21 +18,34 @@ import { SelectAmountScreen } from './screens/CreateRecipe/SelectAmountScreen';
 import { SearchRecipeScreen } from './screens/SearchRecipe/SearchRecipeScreen';
 import { SignupScreen } from './screens/Onboarding/SignupScreen';
 import { LoginScreen } from './screens/Onboarding/LoginScreen';
+import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
+import { RootNavigator } from './navigation';
+
+const MyTheme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    primary: 'rgb(255, 45, 85)',
+    background: 'white',
+  },
+};
 
 const App = () => {
   return (
-    <RecoilRoot>
-      <StatusBar barStyle="dark-content" />
-      <Topbar />
-      <SafeAreaView style={styles.appContainer}>
-        {/* <SignupScreen /> */}
-        {/* <LoginScreen /> */}
-        {/* <Recipe /> */}
-        {/* <SearchRecipeScreen /> */}
-        {/* <AddIngredientScreen /> */}
-        <SelectAmountScreen />
-      </SafeAreaView>
-    </RecoilRoot>
+    <NavigationContainer theme={MyTheme}>
+      <RecoilRoot>
+        <StatusBar barStyle="dark-content" />
+        <SafeAreaView style={styles.appContainer}>
+          <RootNavigator />
+          {/* <SignupScreen /> */}
+          {/* <LoginScreen /> */}
+          {/* <Recipe /> */}
+          {/* <SearchRecipeScreen /> */}
+          {/* <AddIngredientScreen /> */}
+          {/* <SelectAmountScreen /> */}
+        </SafeAreaView>
+      </RecoilRoot>
+    </NavigationContainer>
   );
 };
 
