@@ -13,9 +13,11 @@ export const AppInput = ({
   autoComplete,
   autoCapitalize,
   secureTextEntry,
+  type = 'secondary',
+  multiline = false,
 }) => {
   return (
-    <View style={styles.container}>
+    <View style={styles.container(type, multiline)}>
       {icon && <MaterialIcon name={icon} size={24} />}
       <TextInput
         style={styles.input}
@@ -26,6 +28,7 @@ export const AppInput = ({
         autoComplete={autoComplete}
         autoCapitalize={autoCapitalize}
         secureTextEntry={secureTextEntry}
+        multiline={multiline}
       />
     </View>
   );
@@ -37,12 +40,14 @@ const styles = StyleSheet.create({
     marginLeft: 12,
     marginRight: 32,
   },
-  container: {
-    height: 45,
+  container: (type, multiline) => ({
+    height: multiline ? 100 : 45,
     flexDirection: 'row',
     padding: 10,
-    alignItems: 'center',
-    backgroundColor: COLORS.darkGrey,
+    alignItems: multiline ? 'baseline' : 'center',
+    // backgroundColor: COLORS.darkGrey,
     borderRadius: 18,
-  },
+    borderWidth: 0.2,
+    borderColor: 'grey',
+  }),
 });

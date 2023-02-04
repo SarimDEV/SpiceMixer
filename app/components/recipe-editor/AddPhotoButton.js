@@ -11,30 +11,27 @@ import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 
 import { COLORS } from '../../common';
 
-export const AddIngredientBtn = ({ name, amount }) => {
+export const AddIngredientBtn = () => {
   return (
-    <View style={styles.container}>
-      <MaterialIcon name="add" size={24} color={'grey'} />
-    </View>
+    <TouchableOpacity style={styles.container}>
+      <Text style={styles.text}>Add a photo</Text>
+      <MaterialIcon name="add" size={16} />
+    </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    height: 70,
+    height: 60,
     borderRadius: 15,
     justifyContent: 'center',
     alignItems: 'center',
     alignContent: 'center',
     borderWidth: 1,
     borderStyle: 'dashed',
+    flexDirection: 'row',
   },
-  content: {},
-  name: {
+  text: {
     fontSize: 16,
-    fontWeight: '700',
-  },
-  amount: {
-    fontSize: 13,
   },
 });
