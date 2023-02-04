@@ -14,6 +14,8 @@ import { COLORS, DIM } from '../../common';
 import { IngredientInput } from '../../components/recipe-editor/IngredientInput';
 import { Title } from '../../components/title/Title';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
+import { BackButton } from '../../common/button/BackButton';
+import { useNavigation } from '@react-navigation/native';
 const DATA = [
   {
     id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
@@ -29,23 +31,30 @@ const DATA = [
   },
 ];
 
-const Item = ({ title }) => (
-  <View style={styles.item}>
+const Item = ({ title, navigator }) => (
+  <TouchableOpacity
+    style={styles.item}
+    onPress={() => navigator.navigate('select-amount-screen')}>
     <Text style={styles.title}>{title}</Text>
     <MaterialIcon name="chevron-right" size={16} />
-  </View>
+  </TouchableOpacity>
 );
 
 export const AddIngredientScreen = () => {
+  const navigator = useNavigation();
+
   return (
     <View style={styles.box}>
       <View style={styles.description}>
+        <BackButton navigator={navigator} />
         <Text style={styles.descriptionFont}>Search and select a spice</Text>
       </View>
       <IngredientInput />
       <FlatList
         data={DATA}
-        renderItem={({ item }) => <Item title={item.title} />}
+        renderItem={({ item }) => (
+          <Item title={item.title} navigator={navigator} />
+        )}
         keyExtractor={(item) => item.id}
         style={styles.list}
       />
@@ -61,6 +70,9 @@ const styles = StyleSheet.create({
   },
   description: {
     marginBottom: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignContent: 'center',
   },
   descriptionFont: {
     color: 'grey',

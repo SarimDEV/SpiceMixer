@@ -15,26 +15,34 @@ import { IngredientInput } from '../../components/recipe-editor/IngredientInput'
 import { Title } from '../../components/title/Title';
 import { amountData } from '../../data';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
+import { BackButton } from '../../common/button/BackButton';
+import { useNavigation } from '@react-navigation/native';
 
-const Item = ({ title }) => (
-  <TouchableOpacity style={styles.item}>
+const Item = ({ title, navigator }) => (
+  <TouchableOpacity
+    style={styles.item}
+    onPress={() => navigator.navigate('create-recipe-screen')}>
     <Text style={styles.title}>{title}</Text>
   </TouchableOpacity>
 );
 
 export const SelectAmountScreen = () => {
+  const navigator = useNavigation();
+
   return (
     <View style={styles.box}>
       <View style={styles.description}>
+        <BackButton navigator={navigator} />
         <Text style={styles.descriptionText}>Select an amount</Text>
       </View>
       <FlatList
         data={amountData}
-        renderItem={({ item }) => <Item title={item.title} />}
+        renderItem={({ item }) => (
+          <Item title={item.title} navigator={navigator} />
+        )}
         keyExtractor={(item) => item.id}
         style={styles.list}
       />
-      {/* <AppButton label={'test'} onPress={() => console.log('here')} /> */}
     </View>
   );
 };
@@ -47,6 +55,8 @@ const styles = StyleSheet.create({
   },
   description: {
     marginBottom: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   descriptionFont: {
     color: 'grey',

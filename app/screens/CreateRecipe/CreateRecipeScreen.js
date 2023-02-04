@@ -18,6 +18,7 @@ import { Ingredient } from '../../components/recipe/Ingredient';
 import { AddIngredientBtn } from '../../components/recipe-editor/AddPhotoButton';
 import { AppButton } from '../../common/button/AppButton';
 import { AppInput } from '../../common/input/AppInput';
+import { useNavigation } from '@react-navigation/native';
 const DATA = [
   {
     id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
@@ -43,6 +44,8 @@ const Spacer = () => <View style={styles.spacer} />;
 const LineSpacer = () => <View style={styles.lineSpacer} />;
 
 export const CreateRecipeScreen = () => {
+  const navigator = useNavigation();
+
   const input = () => (
     <View style={styles.inputContainer}>
       <AppInput placeholder={'Enter a name for your blend'} />
@@ -72,7 +75,7 @@ export const CreateRecipeScreen = () => {
     <View style={styles.buttonContainer}>
       <AppButton
         label={'Add an Ingredient'}
-        onPress={() => console.log('here')}
+        onPress={() => navigator.navigate('add-ingredient-screen')}
       />
       <AppButton label={'Save'} primary onPress={() => console.log('here')} />
     </View>

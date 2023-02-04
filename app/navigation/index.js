@@ -8,6 +8,7 @@ import { SearchRecipeScreen } from '../screens/SearchRecipe/SearchRecipeScreen';
 import { Topbar } from '../components/topbar/Topbar';
 import { AddIngredientScreen } from '../screens/CreateRecipe/AddIngredientScreen';
 import { CreateRecipeScreen } from '../screens/CreateRecipe/CreateRecipeScreen';
+import { SelectAmountScreen } from '../screens/CreateRecipe/SelectAmountScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -78,6 +79,11 @@ function UserNavigator() {
           <UserStack.Screen
             name="create-recipe-screen"
             component={CreateRecipeScreen}
+            options={{ headerShown: false }}
+          />
+          <UserStack.Screen
+            name="select-amount-screen"
+            component={SelectAmountScreen}
             options={{ headerShown: false }}
           />
           {/* <UserStack.Screen
