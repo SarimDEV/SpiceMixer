@@ -16,6 +16,8 @@ import { Title } from '../../components/title/Title';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import { BackButton } from '../../common/button/BackButton';
 import { useNavigation } from '@react-navigation/native';
+import { createIngredientState, selectedIngredientState } from './recoil/atoms';
+import { useRecoilState, useRecoilValue } from 'recoil';
 const DATA = [
   {
     id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
@@ -31,10 +33,13 @@ const DATA = [
   },
 ];
 
-const Item = ({ title, navigator }) => (
+const Item = ({ title, navigator, id, setSelectedIngredient }) => (
   <TouchableOpacity
     style={styles.item}
-    onPress={() => navigator.navigate('select-amount-screen')}>
+    onPress={() => {
+      setSelectedIngredient({ id, title });
+      navigator.navigate('select-amount-screen');
+    }}>
     <Text style={styles.title}>{title}</Text>
     <MaterialIcon name="chevron-right" size={16} />
   </TouchableOpacity>
@@ -42,6 +47,8 @@ const Item = ({ title, navigator }) => (
 
 export const AddIngredientScreen = () => {
   const navigator = useNavigation();
+  const [a, setSelectedIngredient] = useRecoilState(selectedIngredientState);
+  const ingredientsData = useRecoilValue(createIngredientState);
 
   return (
     <View style={styles.box}>
@@ -51,9 +58,16 @@ export const AddIngredientScreen = () => {
       </View>
       <IngredientInput />
       <FlatList
-        data={DATA}
+        data={DATA.filter(
+          (data) => !ingredientsData.map((ing) => ing.id).includes(data.id),
+        )}
         renderItem={({ item }) => (
-          <Item title={item.title} navigator={navigator} />
+          <Item
+            title={item.title}
+            id={item.id}
+            navigator={navigator}
+            setSelectedIngredient={setSelectedIngredient}
+          />
         )}
         keyExtractor={(item) => item.id}
         style={styles.list}

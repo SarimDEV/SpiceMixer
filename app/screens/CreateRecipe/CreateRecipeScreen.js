@@ -19,24 +19,12 @@ import { AddIngredientBtn } from '../../components/recipe-editor/AddPhotoButton'
 import { AppButton } from '../../common/button/AppButton';
 import { AppInput } from '../../common/input/AppInput';
 import { useNavigation } from '@react-navigation/native';
-const DATA = [
-  {
-    id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
-    title: 'Black Pepper',
-  },
-  {
-    id: 'bd7acbed-c1b1-46c2-aed5-3ad53abb28ba',
-    title: 'Pepper',
-  },
-  {
-    id: 'bd7acbef-c1b1-46c2-aed5-3ad53abb28ba',
-    title: 'Green Pepper',
-  },
-];
+import { createIngredientState } from './recoil/atoms.js';
+import { useRecoilValue } from 'recoil';
 
-const Item = ({ title }) => (
+const Item = ({ title, amount }) => (
   <View style={styles.item}>
-    <Ingredient name={title} amount={1} />
+    <Ingredient name={title} amount={amount} />
   </View>
 );
 
@@ -44,30 +32,39 @@ const Spacer = () => <View style={styles.spacer} />;
 const LineSpacer = () => <View style={styles.lineSpacer} />;
 
 export const CreateRecipeScreen = () => {
+  const ingredientsData = useRecoilValue(createIngredientState);
   const navigator = useNavigation();
 
   const input = () => (
-    <View style={styles.inputContainer}>
-      <AppInput placeholder={'Enter a name for your blend'} />
-      <Spacer />
-      <AppInput placeholder={'Describe your blend'} multiline={true} />
-      <Spacer />
-      <AddIngredientBtn />
-    </View>
+    <>
+      <View style={styles.inputContainer}>
+        <AppInput placeholder={'Enter a name for your blend'} />
+        <Spacer />
+        <AppInput placeholder={'Describe your blend'} multiline={true} />
+        <Spacer />
+        <AddIngredientBtn />
+      </View>
+      <LineSpacer />
+    </>
   );
 
   const ingredients = () => {
-    if (!DATA || DATA.length <= 0) {
+    if (!ingredientsData || ingredientsData.length <= 0) {
       return;
     }
 
     return (
-      <FlatList
-        data={DATA}
-        renderItem={({ item }) => <Item title={item.title} />}
-        keyExtractor={(item) => item.id}
-        style={styles.list}
-      />
+      <>
+        <FlatList
+          data={ingredientsData}
+          renderItem={({ item }) => (
+            <Item title={item.title} amount={item.amount} />
+          )}
+          keyExtractor={(item) => item.id}
+          style={styles.list}
+        />
+        <LineSpacer />
+      </>
     );
   };
 
@@ -75,7 +72,10 @@ export const CreateRecipeScreen = () => {
     <View style={styles.buttonContainer}>
       <AppButton
         label={'Add an Ingredient'}
-        onPress={() => navigator.navigate('add-ingredient-screen')}
+        onPress={() => {
+          console.log(ingredientsData);
+          navigator.navigate('add-ingredient-screen');
+        }}
       />
       <AppButton label={'Save'} primary onPress={() => console.log('here')} />
     </View>
@@ -91,9 +91,7 @@ export const CreateRecipeScreen = () => {
     <View style={styles.box}>
       {description()}
       {input()}
-      <LineSpacer />
       {ingredients()}
-      <LineSpacer />
       {buttons()}
     </View>
   );

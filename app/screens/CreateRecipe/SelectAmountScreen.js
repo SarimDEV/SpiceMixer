@@ -17,17 +17,34 @@ import { amountData } from '../../data';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import { BackButton } from '../../common/button/BackButton';
 import { useNavigation } from '@react-navigation/native';
+import { useRecoilState, useRecoilValue } from 'recoil';
+import { createIngredientState, selectedIngredientState } from './recoil/atoms';
 
-const Item = ({ title, navigator }) => (
+const Item = ({ title, id, navigator, addIngredient }) => (
   <TouchableOpacity
     style={styles.item}
-    onPress={() => navigator.navigate('create-recipe-screen')}>
+    onPress={() => {
+      addIngredient(id);
+      navigator.navigate('create-recipe-screen');
+    }}>
     <Text style={styles.title}>{title}</Text>
   </TouchableOpacity>
 );
 
 export const SelectAmountScreen = () => {
   const navigator = useNavigation();
+  const [ingredientsData, setIngredientsData] = useRecoilState(
+    createIngredientState,
+  );
+  const [selectedIngredient, setSelectedIngredient] = useRecoilState(
+    selectedIngredientState,
+  );
+
+  const addIngredient = (amount) => {
+    const newSelectedIngredient = { ...selectedIngredient, amount };
+    const newState = [...ingredientsData, newSelectedIngredient];
+    setIngredientsData(newState);
+  };
 
   return (
     <View style={styles.box}>
@@ -38,7 +55,12 @@ export const SelectAmountScreen = () => {
       <FlatList
         data={amountData}
         renderItem={({ item }) => (
-          <Item title={item.title} navigator={navigator} />
+          <Item
+            title={item.title}
+            id={item.id}
+            navigator={navigator}
+            addIngredient={addIngredient}
+          />
         )}
         keyExtractor={(item) => item.id}
         style={styles.list}
