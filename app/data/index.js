@@ -80,3 +80,15 @@ export const amountData = [
     title: '20 tsb',
   },
 ];
+
+export const spiceData = [
+  { id: 1, title: 'Garlic powder' },
+  { id: 2, title: 'Cinnamon' },
+  { id: 3, title: 'Onion powder' },
+  { id: 4, title: 'Paprika' },
+  { id: 5, title: 'Cumin' },
+  { id: 6, title: 'Turmeric' },
+  { id: 7, title: 'Black pepper' },
+  { id: 8, title: 'Coriander powder' },
+  { id: 9, title: 'Salt' },
+];

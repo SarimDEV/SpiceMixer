@@ -11,14 +11,16 @@ import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 
 import { COLORS } from '../../common';
 
-export const Ingredient = ({ name, amount }) => {
+export const Ingredient = ({ name, amount, onDelete }) => {
   return (
     <View style={styles.container}>
       <View style={styles.content}>
         <Text style={styles.name}>{name}</Text>
         <Text style={styles.amount}>{amount} tsb</Text>
       </View>
-      <MaterialIcon name="close" size={16} />
+      <TouchableOpacity onPress={onDelete}>
+        <MaterialIcon name="close" size={16} />
+      </TouchableOpacity>
     </View>
   );
 };

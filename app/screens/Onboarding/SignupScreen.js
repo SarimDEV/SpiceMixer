@@ -10,6 +10,7 @@ import { Logo } from '../../common/logo/Logo';
 import { auth } from '../../services/auth';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { useAuth } from '../../hooks/useAuth';
+import { useNavigation } from '@react-navigation/native';
 
 const Spacer = () => {
   return <View style={styles.spacer} />;
@@ -43,6 +44,7 @@ const handleSignUp = async (
 
 export const SignupScreen = () => {
   const { user } = useAuth();
+  const navigator = useNavigation();
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
@@ -98,7 +100,10 @@ export const SignupScreen = () => {
         />
         {error ? <Text style={styles.errorText}>{error}</Text> : undefined}
       </View>
-      <AppButton label={'Back to Login'} />
+      <AppButton
+        label={'Back to Login'}
+        onPress={() => navigator.navigate('login-screen')}
+      />
       <Spacer />
       <AppButton
         label={'Sign Up'}
@@ -107,7 +112,6 @@ export const SignupScreen = () => {
           handleSignUp(email, password, name, successCallback, signUpError)
         }
       />
-      <Text>{user ? user.uid : 'no user'}</Text>
     </View>
   );
 };

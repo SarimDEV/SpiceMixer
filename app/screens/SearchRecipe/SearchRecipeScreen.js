@@ -14,6 +14,7 @@ import {
 
 import { COLORS, DIM } from '../../common';
 import { IngredientInput } from '../../components/recipe-editor/IngredientInput';
+import { AddRecipeButton } from '../../components/recipe/AddRecipeButton';
 import { Recipe } from '../../components/recipe/Recipe';
 import { SearchInput } from '../../components/search/SearchInput';
 import { Title } from '../../components/title/Title';
@@ -36,25 +37,24 @@ export const SearchRecipeScreen = () => {
 
   useEffect(() => {
     getRecipes();
-
-    // return () => {
-    //   second;
-    // };
   }, []);
 
   return (
-    <View style={styles.box}>
-      <View style={styles.headerContainer}>
-        <SearchInput />
-        {/* <Title title={'Select Amount'} /> */}
+    <>
+      <View style={styles.box}>
+        <View style={styles.headerContainer}>
+          <SearchInput />
+          {/* <Title title={'Select Amount'} /> */}
+        </View>
+        <FlatList
+          data={recipes}
+          renderItem={({ item }) => <Item title={item.title} />}
+          keyExtractor={(item) => item.id}
+          style={styles.list}
+        />
       </View>
-      <FlatList
-        data={recipes}
-        renderItem={({ item }) => <Item title={item.title} />}
-        keyExtractor={(item) => item.id}
-        style={styles.list}
-      />
-    </View>
+      <AddRecipeButton />
+    </>
   );
 };
 

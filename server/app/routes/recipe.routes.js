@@ -3,7 +3,7 @@ module.exports = app => {
   var router = require("express").Router();
 
   router.post("/create", recipe.create);
-  router.get("/:id", recipe.findOne);
+  router.get("/read/:id", recipe.findOne);
   router.put("/update/:id", recipe.update);
   router.delete("/delete/:id", recipe.delete);
   router.put("/publish/:id", recipe.publishRecipe)

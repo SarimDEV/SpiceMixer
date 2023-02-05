@@ -18,20 +18,7 @@ import { BackButton } from '../../common/button/BackButton';
 import { useNavigation } from '@react-navigation/native';
 import { createIngredientState, selectedIngredientState } from './recoil/atoms';
 import { useRecoilState, useRecoilValue } from 'recoil';
-const DATA = [
-  {
-    id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
-    title: 'Black Pepper',
-  },
-  {
-    id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f63',
-    title: 'Cumin Powder',
-  },
-  {
-    id: '58694a0f-3da1-471f-bd96-145571e29d72',
-    title: 'Paprika',
-  },
-];
+import { spiceData } from '../../data';
 
 const Item = ({ title, navigator, id, setSelectedIngredient }) => (
   <TouchableOpacity
@@ -58,7 +45,7 @@ export const AddIngredientScreen = () => {
       </View>
       <IngredientInput />
       <FlatList
-        data={DATA.filter(
+        data={spiceData.filter(
           (data) => !ingredientsData.map((ing) => ing.id).includes(data.id),
         )}
         renderItem={({ item }) => (
@@ -72,7 +59,6 @@ export const AddIngredientScreen = () => {
         keyExtractor={(item) => item.id}
         style={styles.list}
       />
-      {/* <AppButton label={'test'} onPress={() => console.log('here')} /> */}
     </View>
   );
 };

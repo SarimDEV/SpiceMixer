@@ -8,24 +8,39 @@ import {
   TextInput,
   SafeAreaView,
 } from 'react-native';
+import { signOut } from 'firebase/auth';
 
 import { COLORS, DIM } from '../../common';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import { Logo } from '../../common/logo/Logo';
+import { auth } from '../../services/auth';
 
 export const Topbar = () => {
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+    } catch (err) {
+      const errCode = err.code;
+      const errMessage = err.message;
+      console.log(errCode);
+      console.log(errMessage);
+    }
+  };
+
   return (
     <View style={style.container}>
       <SafeAreaView>
         <View style={style.headerContainer}>
           <Logo />
-          <View style={style.profileIcon}>
+          <TouchableOpacity
+            style={style.profileIcon}
+            onPress={() => handleLogout()}>
             <MaterialIcon
               name="person-outline"
               size={24}
               color={COLORS.darkGrey}
             />
-          </View>
+          </TouchableOpacity>
         </View>
       </SafeAreaView>
     </View>

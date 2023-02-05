@@ -64,7 +64,7 @@ function UserNavigator() {
   return (
     <>
       <Topbar />
-      <UserStack.Navigator initialRouteName="create-recipe-screen">
+      <UserStack.Navigator initialRouteName="search-recipe-screen">
         <UserStack.Group>
           <UserStack.Screen
             name="search-recipe-screen"
