@@ -20,7 +20,7 @@ export const AppInput = ({
     <View style={styles.container(type, multiline)}>
       {icon && <MaterialIcon name={icon} size={24} />}
       <TextInput
-        style={styles.input}
+        style={styles.input(type, multiline)}
         value={text}
         onChangeText={onChangeText}
         placeholder={placeholder}
@@ -35,15 +35,15 @@ export const AppInput = ({
 };
 
 const styles = StyleSheet.create({
-  input: {
+  input: (type, multiline) => ({
     borderRadius: 15,
     marginLeft: 12,
     marginRight: 32,
-  },
-  container: (type, multiline) => ({
     height: multiline ? 100 : 45,
+  }),
+  container: (type, multiline) => ({
     flexDirection: 'row',
-    padding: 10,
+    paddingHorizontal: 10,
     alignItems: multiline ? 'baseline' : 'center',
     // backgroundColor: COLORS.darkGrey,
     borderRadius: 18,
