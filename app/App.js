@@ -1,5 +1,11 @@
 import React from 'react';
-import { SafeAreaView, StatusBar, StyleSheet } from 'react-native';
+import {
+  Keyboard,
+  SafeAreaView,
+  StatusBar,
+  StyleSheet,
+  TouchableWithoutFeedback,
+} from 'react-native';
 import { Connect } from './Connect';
 import {
   RecoilRoot,
@@ -36,7 +42,11 @@ const App = () => {
       <RecoilRoot>
         <StatusBar barStyle="dark-content" />
         <SafeAreaView style={styles.appContainer}>
-          <RootNavigator />
+          <TouchableWithoutFeedback
+            style={{ flex: 1 }}
+            onPress={Keyboard.dismiss}>
+            <RootNavigator />
+          </TouchableWithoutFeedback>
           {/* <SignupScreen /> */}
           {/* <LoginScreen /> */}
           {/* <Recipe /> */}
