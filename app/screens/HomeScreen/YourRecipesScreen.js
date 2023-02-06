@@ -50,7 +50,7 @@ export const YourRecipesScreen = () => {
       <View style={styles.box}>
         <View style={styles.headerContainer}>
           <Text style={styles.hello}>
-            Hi, {user && user.displayName.split(' ')[0]}
+            Hi, {user && user.displayName && user.displayName.split(' ')[0]}
           </Text>
           <TouchableOpacity
             onPress={() => navigator.navigate('search-recipe-screen')}>
