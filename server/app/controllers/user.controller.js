@@ -2,6 +2,7 @@ const db = require("../models");
 const User = db.user;
 
 exports.create = async (req, res) => {
+  console.log("CREATE USER ", req)
   if (!req.body.uid || !req.body.name ) {
     res.status(400).send({ message: "Content can not be empty!" });
     return;

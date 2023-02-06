@@ -34,6 +34,13 @@ const handleSignUp = async (
       displayName: name,
     });
 
+    const response = await axios.post('/api/user/create', {
+      name,
+      uid: userCredentials.user.uid,
+    });
+
+    console.log("CREATED USER RESPONSE", response)
+
     successCallback();
   } catch (err) {
     const errCode = err.code;

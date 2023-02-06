@@ -4,6 +4,7 @@ module.exports = mongoose => {
       title: String,
       ingredients: [{
         name: String,
+        spiceId: Number,
         amount: Number
       }],
       description: String,
