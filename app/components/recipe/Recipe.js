@@ -4,7 +4,7 @@ import { Text, View, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { COLORS } from '../../common';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 
-export const Recipe = ({ title }) => {
+export const Recipe = ({ title, icon, description }) => {
   return (
     <View style={styles.recipeContainer}>
       <Image
@@ -17,9 +17,9 @@ export const Recipe = ({ title }) => {
         <View style={styles.textContainer}>
           <View>
             <Text style={styles.recipeTitle}>{title}</Text>
-            <Text style={styles.author}>Sahifa Shahid</Text>
+            <Text style={styles.author}>{description}</Text>
           </View>
-          <MaterialIcon name="favorite-border" size={24} />
+          <MaterialIcon name={icon ? icon : 'favorite-border'} size={24} />
         </View>
       </View>
     </View>

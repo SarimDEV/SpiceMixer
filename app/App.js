@@ -42,11 +42,7 @@ const App = () => {
       <RecoilRoot>
         <StatusBar barStyle="dark-content" />
         <SafeAreaView style={styles.appContainer}>
-          <TouchableWithoutFeedback
-            style={{ flex: 1 }}
-            onPress={Keyboard.dismiss}>
-            <RootNavigator />
-          </TouchableWithoutFeedback>
+          <RootNavigator />
           {/* <SignupScreen /> */}
           {/* <LoginScreen /> */}
           {/* <Recipe /> */}

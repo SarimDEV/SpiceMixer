@@ -9,6 +9,7 @@ import { Topbar } from '../components/topbar/Topbar';
 import { AddIngredientScreen } from '../screens/CreateRecipe/AddIngredientScreen';
 import { CreateRecipeScreen } from '../screens/CreateRecipe/CreateRecipeScreen';
 import { SelectAmountScreen } from '../screens/CreateRecipe/SelectAmountScreen';
+import { YourRecipesScreen } from '../screens/HomeScreen/YourRecipesScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -64,8 +65,13 @@ function UserNavigator() {
   return (
     <>
       <Topbar />
-      <UserStack.Navigator initialRouteName="search-recipe-screen">
+      <UserStack.Navigator initialRouteName="your-recipes-screen">
         <UserStack.Group>
+          <UserStack.Screen
+            name="your-recipes-screen"
+            component={YourRecipesScreen}
+            options={{ headerShown: false }}
+          />
           <UserStack.Screen
             name="search-recipe-screen"
             component={SearchRecipeScreen}
