@@ -15,7 +15,7 @@ import { IngredientInput } from '../../components/recipe-editor/IngredientInput'
 import { Title } from '../../components/title/Title';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import { Ingredient } from '../../components/recipe/Ingredient';
-import { AddIngredientBtn } from '../../components/recipe-editor/AddPhotoButton';
+import { AddIngredientBtn, AddPhotoButton } from '../../components/recipe-editor/AddPhotoButton';
 import { AppButton } from '../../common/button/AppButton';
 import { AppInput } from '../../common/input/AppInput';
 import { useNavigation } from '@react-navigation/native';
@@ -79,7 +79,7 @@ export const CreateRecipeScreen = () => {
           multiline={true}
         />
         <Spacer />
-        <AddIngredientBtn />
+        <AddPhotoButton />
       </View>
       <LineSpacer />
     </>
