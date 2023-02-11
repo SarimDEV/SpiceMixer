@@ -12,7 +12,8 @@ exports.create = async (req, res) => {
     title: req.body.title,
     ingredients: req.body.ingredients,
     description: req.body.description,
-    published: false
+    published: false,
+    image: req.body.image
   });
   let recipeId;
 
@@ -59,7 +60,8 @@ exports.update = async (req, res) => {
   const update = {
     title: req.body.title,
     ingredients: req.body.ingredients,
-    description: req.body.description
+    description: req.body.description,
+    image: req.body.image
   }
 
   try {

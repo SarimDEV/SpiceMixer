@@ -8,7 +8,8 @@ module.exports = mongoose => {
         amount: Number
       }],
       description: String,
-      published: Boolean
+      published: Boolean,
+      image: String
     },
     { timestamps: true }
   );
