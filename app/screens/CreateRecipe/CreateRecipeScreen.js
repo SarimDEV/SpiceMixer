@@ -15,7 +15,10 @@ import { IngredientInput } from '../../components/recipe-editor/IngredientInput'
 import { Title } from '../../components/title/Title';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import { Ingredient } from '../../components/recipe/Ingredient';
-import { AddIngredientBtn, AddPhotoButton } from '../../components/recipe-editor/AddPhotoButton';
+import {
+  AddIngredientBtn,
+  AddPhotoButton,
+} from '../../components/recipe-editor/AddPhotoButton';
 import { AppButton } from '../../common/button/AppButton';
 import { AppInput } from '../../common/input/AppInput';
 import { useNavigation } from '@react-navigation/native';
@@ -24,6 +27,7 @@ import { useRecoilState, useRecoilValue } from 'recoil';
 import axios from 'axios';
 import { useAuth } from '../../hooks/useAuth';
 import { BackButton } from '../../common/button/BackButton';
+import { uploadFile } from '../../components/recipe-editor/uploadFile';
 
 const Item = ({ title, amount, deleteIngredient }) => (
   <View style={styles.item}>
@@ -40,10 +44,16 @@ export const CreateRecipeScreen = () => {
   const [ingredientsData, setIngredientsData] = useRecoilState(
     createIngredientState,
   );
+  const [image, setImage] = useState();
   const navigator = useNavigation();
   const { user } = useAuth();
 
   const createRecipe = async () => {
+    let imageUri;
+    if (image) {
+      imageUri = await uploadFile(image.assets[0].uri);
+    }
+
     const res = await axios.post('/api/recipe/create', {
       title,
       description,
@@ -53,8 +63,8 @@ export const CreateRecipeScreen = () => {
     });
 
     console.log(res.data);
-
     console.log('successfully made');
+    navigator.navigate('your-recipes-screen');
   };
 
   const deleteIngredient = async (toDeleteId) => {
@@ -79,7 +89,7 @@ export const CreateRecipeScreen = () => {
           multiline={true}
         />
         <Spacer />
-        <AddPhotoButton />
+        <AddPhotoButton image={image} setImage={setImage} />
       </View>
       <LineSpacer />
     </>
@@ -123,7 +133,6 @@ export const CreateRecipeScreen = () => {
         primary
         onPress={() => {
           createRecipe();
-          navigator.navigate('your-recipes-screen');
         }}
       />
     </View>

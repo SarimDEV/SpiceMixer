@@ -14,33 +14,29 @@ import {
   ImagePickerResponse,
 } from 'react-native-image-picker';
 
-import { COLORS } from '../../common';
-
-export const AddPhotoButton = () => {
-  const [response, setResponse] = useState();
+export const AddPhotoButton = ({ image, setImage }) => {
   const onButtonPress = React.useCallback(async () => {
-    let image = await launchImageLibrary({
+    let im = await launchImageLibrary({
       storageOptions: {
         skipBackup: true,
         path: 'images',
       },
       mediaType: 'photo',
-      quality: '0.5',
+      quality: '0.25',
     });
-    if (image.assets) {
-      console.log(image.assets);
-      setResponse(image);
+    if (im.assets) {
+      setImage(im);
     }
-  }, []);
+  }, [setImage]);
 
   return (
     <TouchableOpacity style={styles.container} onPress={() => onButtonPress()}>
-      {response ? (
+      {image ? (
         <Image
           resizeMethod="resize"
           style={styles.image}
           source={{
-            uri: response.assets[0].uri,
+            uri: image.assets[0].uri,
           }}
         />
       ) : (
