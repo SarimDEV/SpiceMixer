@@ -118,7 +118,14 @@ export const CreateRecipeScreen = () => {
           navigator.navigate('add-ingredient-screen');
         }}
       />
-      <AppButton label={'Save'} primary onPress={() => createRecipe()} />
+      <AppButton
+        label={'Save'}
+        primary
+        onPress={() => {
+          createRecipe();
+          navigator.navigate('your-recipes-screen');
+        }}
+      />
     </View>
   );
 

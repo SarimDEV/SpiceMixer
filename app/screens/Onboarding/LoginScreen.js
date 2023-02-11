@@ -44,8 +44,10 @@ export const LoginScreen = () => {
   };
 
   useEffect(() => {
-    if (error) setError(false);
-  }, [email, password]);
+    if (error) {
+      setError(false);
+    }
+  }, [email, password, error]);
 
   const successCallback = (result) => {
     console.log('SUCCESS');

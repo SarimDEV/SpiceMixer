@@ -11,6 +11,8 @@ import { auth } from '../../services/auth';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { useAuth } from '../../hooks/useAuth';
 import { useNavigation } from '@react-navigation/native';
+import { useRecoilState } from 'recoil';
+import { authDisplayName } from '../../auth/atoms';
 
 const Spacer = () => {
   return <View style={styles.spacer} />;
@@ -34,12 +36,12 @@ const handleSignUp = async (
       displayName: name,
     });
 
-    const response = await axios.post('/api/user/create', {
+    await userCredentials.user.reload();
+
+    await axios.post('/api/user/create', {
       name,
       uid: userCredentials.user.uid,
     });
-
-    console.log("CREATED USER RESPONSE", response)
 
     successCallback();
   } catch (err) {
@@ -50,23 +52,28 @@ const handleSignUp = async (
 };
 
 export const SignupScreen = () => {
-  const { user } = useAuth();
+  const { user, setSigningUp } = useAuth();
   const navigator = useNavigation();
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [_, setDisplayName] = useRecoilState(authDisplayName);
 
   const signUpError = (code, message) => {
+    setSigningUp(false);
     setError(message ? message : 'Could not sign up user');
   };
 
   useEffect(() => {
-    if (error) setError(false);
-  }, [email, name, password]);
+    if (error) {
+      setError(false);
+    }
+  }, [email, name, password, error]);
 
   const successCallback = () => {
-    console.log('SUCCESS');
+    setDisplayName(name);
+    setSigningUp(false);
   };
 
   return (
@@ -115,9 +122,10 @@ export const SignupScreen = () => {
       <AppButton
         label={'Sign Up'}
         primary
-        onPress={() =>
-          handleSignUp(email, password, name, successCallback, signUpError)
-        }
+        onPress={() => {
+          setSigningUp(true);
+          handleSignUp(email, password, name, successCallback, signUpError);
+        }}
       />
     </View>
   );

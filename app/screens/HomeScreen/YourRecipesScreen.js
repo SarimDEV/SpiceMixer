@@ -21,7 +21,9 @@ import { Title } from '../../components/title/Title';
 import { amountData } from '../../data';
 import { useAuth } from '../../hooks/useAuth';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
-import { useNavigation } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
+import { useRecoilState, useRecoilValue } from 'recoil';
+import { authDisplayName } from '../../auth/atoms';
 
 const Item = ({ title, description }) => (
   <TouchableOpacity activeOpacity={0.75} style={styles.item}>
@@ -31,27 +33,25 @@ const Item = ({ title, description }) => (
 
 export const YourRecipesScreen = () => {
   const { user } = useAuth();
+  const displayName = useRecoilValue(authDisplayName);
   const navigator = useNavigation();
   const [recipes, setRecipes] = useState([]);
-
-  const getRecipes = async () => {
-    const res = await axios.get('/api/recipe/publish');
-    setRecipes(res.data.response);
-    console.log(res.status);
-    console.log(res.data.response);
-  };
+  const isFocused = useIsFocused();
 
   useEffect(() => {
+    const getRecipes = async () => {
+      const res = await axios.get(`/api/user/read/${user.uid}`);
+      setRecipes(res.data[0].recipes);
+      console.log(res.data[0].recipes);
+    };
     getRecipes();
-  }, []);
+  }, [isFocused, user]);
 
   return (
     <>
       <View style={styles.box}>
         <View style={styles.headerContainer}>
-          <Text style={styles.hello}>
-            Hi, {user && user.displayName && user.displayName.split(' ')[0]}
-          </Text>
+          <Text style={styles.hello}>Hi, {displayName.split(' ')[0]}</Text>
           <TouchableOpacity
             onPress={() => navigator.navigate('search-recipe-screen')}>
             <MaterialIcon name="search" size={32} />

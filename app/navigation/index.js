@@ -14,12 +14,14 @@ import { YourRecipesScreen } from '../screens/HomeScreen/YourRecipesScreen';
 const Stack = createNativeStackNavigator();
 
 export const RootNavigator = () => {
-  const { user, loading } = useAuth();
+  const { user, loading, signingUp } = useAuth();
   return (
     <Stack.Navigator>
       <Stack.Screen
         name="Root"
-        component={user ? UserNavigator : OnboardingNavigator}
+        component={
+          user && !loading && !signingUp ? UserNavigator : OnboardingNavigator
+        }
         options={{ headerShown: false }}
       />
       <Stack.Screen
