@@ -25,11 +25,18 @@ import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { authDisplayName } from '../../auth/atoms';
 
-const Item = ({ title, description }) => (
+const Item = ({ title, description, image }) => (
   <TouchableOpacity activeOpacity={0.75} style={styles.item}>
-    <Recipe title={title} icon={'edit'} description={description} />
+    <Recipe
+      title={title}
+      icon={'edit'}
+      description={description}
+      image={image}
+    />
   </TouchableOpacity>
 );
+
+const FooterItem = () => <View marginBottom={75} />;
 
 export const YourRecipesScreen = () => {
   const { user } = useAuth();
@@ -60,10 +67,15 @@ export const YourRecipesScreen = () => {
         <FlatList
           data={recipes}
           renderItem={({ item }) => (
-            <Item title={item.title} description={item.description} />
+            <Item
+              title={item.title}
+              description={item.description}
+              image={item.image}
+            />
           )}
           keyExtractor={(item) => item.id}
           style={styles.list}
+          ListFooterComponent={<FooterItem />}
         />
       </View>
       <AddRecipeButton />

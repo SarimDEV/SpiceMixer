@@ -60,6 +60,7 @@ export const CreateRecipeScreen = () => {
       ingredients: ingredientsData,
       published: false,
       uid: user.uid,
+      image: imageUri,
     });
 
     console.log(res.data);
