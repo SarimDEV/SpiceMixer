@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import {
   Text,
@@ -21,7 +21,7 @@ import {
 } from '../../components/recipe-editor/AddPhotoButton';
 import { AppButton } from '../../common/button/AppButton';
 import { AppInput } from '../../common/input/AppInput';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { createIngredientState } from './recoil/atoms.js';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import axios from 'axios';
@@ -73,6 +73,12 @@ export const CreateRecipeScreen = () => {
       ingredientsData.filter((something) => something.id !== toDeleteId),
     );
   };
+
+  useEffect(() => {
+    return () => {
+      setIngredientsData([]);
+    };
+  }, []);
 
   const input = () => (
     <>

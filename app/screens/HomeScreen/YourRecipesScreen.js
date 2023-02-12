@@ -21,7 +21,11 @@ import { Title } from '../../components/title/Title';
 import { amountData } from '../../data';
 import { useAuth } from '../../hooks/useAuth';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
-import { useIsFocused, useNavigation } from '@react-navigation/native';
+import {
+  useFocusEffect,
+  useIsFocused,
+  useNavigation,
+} from '@react-navigation/native';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { authDisplayName } from '../../auth/atoms';
 
