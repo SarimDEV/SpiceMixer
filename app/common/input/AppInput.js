@@ -38,8 +38,8 @@ const styles = StyleSheet.create({
   input: (type, multiline) => ({
     borderRadius: 15,
     marginLeft: 12,
-    marginRight: 32,
     height: multiline ? 100 : 45,
+    width: '100%',
   }),
   container: (type, multiline) => ({
     flexDirection: 'row',
