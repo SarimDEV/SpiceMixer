@@ -10,6 +10,8 @@ import { AddIngredientScreen } from '../screens/CreateRecipe/AddIngredientScreen
 import { CreateRecipeScreen } from '../screens/CreateRecipe/CreateRecipeScreen';
 import { SelectAmountScreen } from '../screens/CreateRecipe/SelectAmountScreen';
 import { YourRecipesScreen } from '../screens/HomeScreen/YourRecipesScreen';
+import { Connect } from '../Connect';
+import { BluetoothScreen } from '../screens/Bluetooth/BluetoothScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -72,6 +74,7 @@ function UserNavigator() {
           <UserStack.Screen
             name="your-recipes-screen"
             component={YourRecipesScreen}
+            // component={BluetoothScreen}
             options={{ headerShown: false }}
           />
           <UserStack.Screen
@@ -92,6 +95,11 @@ function UserNavigator() {
           <UserStack.Screen
             name="select-amount-screen"
             component={SelectAmountScreen}
+            options={{ headerShown: false }}
+          />
+          <UserStack.Screen
+            name="bluetooth-screen"
+            component={BluetoothScreen}
             options={{ headerShown: false }}
           />
           {/* <UserStack.Screen

@@ -14,8 +14,11 @@ import { COLORS, DIM } from '../../common';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import { Logo } from '../../common/logo/Logo';
 import { auth } from '../../services/auth';
+import { useNavigation } from '@react-navigation/native';
 
 export const Topbar = () => {
+  const navigator = useNavigation();
+
   const handleLogout = async () => {
     try {
       await signOut(auth);
@@ -32,15 +35,22 @@ export const Topbar = () => {
       <SafeAreaView>
         <View style={style.headerContainer}>
           <Logo />
-          <TouchableOpacity
-            style={style.profileIcon}
-            onPress={() => handleLogout()}>
-            <MaterialIcon
-              name="person-outline"
-              size={24}
-              color={COLORS.darkGrey}
-            />
-          </TouchableOpacity>
+          <View style={style.iconContainer}>
+            <TouchableOpacity
+              style={style.blutoothIcon}
+              onPress={() => navigator.navigate('bluetooth-screen')}>
+              <MaterialIcon name="bluetooth" size={24} />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={style.profileIcon}
+              onPress={() => handleLogout()}>
+              <MaterialIcon
+                name="person-outline"
+                size={24}
+                color={COLORS.darkGrey}
+              />
+            </TouchableOpacity>
+          </View>
         </View>
       </SafeAreaView>
     </View>
@@ -61,6 +71,16 @@ const style = StyleSheet.create({
   logoFont: {
     fontSize: 42,
     fontWeight: '700',
+  },
+  iconContainer: {
+    flexDirection: 'row',
+  },
+  blutoothIcon: {
+    borderRadius: 50,
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   profileIcon: {
     backgroundColor: 'black',

@@ -28,6 +28,7 @@ import axios from 'axios';
 import { useAuth } from '../../hooks/useAuth';
 import { BackButton } from '../../common/button/BackButton';
 import { uploadFile } from '../../components/recipe-editor/uploadFile';
+import { AppDivider } from '../../common/divider/AppDivider';
 
 const Item = ({ title, amount, deleteIngredient }) => (
   <View style={styles.item}>
@@ -36,7 +37,6 @@ const Item = ({ title, amount, deleteIngredient }) => (
 );
 
 const Spacer = () => <View style={styles.spacer} />;
-const LineSpacer = () => <View style={styles.lineSpacer} />;
 
 export const CreateRecipeScreen = () => {
   const [title, setTitle] = useState('');
@@ -98,7 +98,7 @@ export const CreateRecipeScreen = () => {
         <Spacer />
         <AddPhotoButton image={image} setImage={setImage} />
       </View>
-      <LineSpacer />
+      <AppDivider />
     </>
   );
 
@@ -121,7 +121,7 @@ export const CreateRecipeScreen = () => {
           keyExtractor={(item) => item.id}
           style={styles.list}
         />
-        <LineSpacer />
+        <AppDivider />
       </>
     );
   };
