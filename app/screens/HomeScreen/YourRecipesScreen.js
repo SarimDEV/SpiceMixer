@@ -29,13 +29,19 @@ import {
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { authDisplayName } from '../../auth/atoms';
 
-const Item = ({ title, description, image }) => (
+const Item = ({ item, navigator }) => (
   <TouchableOpacity activeOpacity={0.75} style={styles.item}>
     <Recipe
-      title={title}
+      title={item.title}
       icon={'edit'}
-      description={description}
-      image={image}
+      description={item.description}
+      image={item.image}
+      onPressIcon={() =>
+        navigator.navigate('create-recipe-screen', {
+          isEdit: true,
+          item,
+        })
+      }
     />
   </TouchableOpacity>
 );
@@ -53,7 +59,7 @@ export const YourRecipesScreen = () => {
     const getRecipes = async () => {
       const res = await axios.get(`/api/user/read/${user.uid}`);
       setRecipes(res.data[0].recipes);
-      console.log(res.data[0].recipes);
+      // console.log(res.data[0].recipes);
     };
     getRecipes();
   }, [isFocused, user]);
@@ -70,13 +76,7 @@ export const YourRecipesScreen = () => {
         </View>
         <FlatList
           data={recipes}
-          renderItem={({ item }) => (
-            <Item
-              title={item.title}
-              description={item.description}
-              image={item.image}
-            />
-          )}
+          renderItem={({ item }) => <Item item={item} navigator={navigator} />}
           keyExtractor={(item) => item.id}
           style={styles.list}
           ListFooterComponent={<FooterItem />}

@@ -5,7 +5,7 @@ import { COLORS } from '../../common';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import { truncate } from '../../common/utils';
 
-export const Recipe = ({ title, icon, description, image }) => {
+export const Recipe = ({ title, icon, description, image, onPressIcon }) => {
   return (
     <View style={styles.recipeContainer}>
       <Image
@@ -22,7 +22,9 @@ export const Recipe = ({ title, icon, description, image }) => {
             <Text style={styles.recipeTitle}>{truncate(title, 40)}</Text>
             <Text style={styles.author}>{truncate(description, 50)}</Text>
           </View>
-          <MaterialIcon name={icon ? icon : 'favorite-border'} size={24} />
+          <TouchableOpacity style={styles.iconButton} onPress={onPressIcon}>
+            <MaterialIcon name={icon ? icon : 'favorite-border'} size={24} />
+          </TouchableOpacity>
         </View>
       </View>
     </View>
@@ -30,6 +32,9 @@ export const Recipe = ({ title, icon, description, image }) => {
 };
 
 const styles = StyleSheet.create({
+  iconButton: {
+    padding: 4,
+  },
   recipeContainer: {
     // height: 150,
   },

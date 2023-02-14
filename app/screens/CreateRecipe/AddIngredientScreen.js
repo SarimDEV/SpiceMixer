@@ -20,14 +20,14 @@ import { createIngredientState, selectedIngredientState } from './recoil/atoms';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { spiceData } from '../../data';
 
-const Item = ({ title, navigator, id, setSelectedIngredient }) => (
+const Item = ({ name, navigator, spiceId, setSelectedIngredient }) => (
   <TouchableOpacity
     style={styles.item}
     onPress={() => {
-      setSelectedIngredient({ id, title });
+      setSelectedIngredient({ name, spiceId });
       navigator.navigate('select-amount-screen');
     }}>
-    <Text style={styles.title}>{title}</Text>
+    <Text style={styles.title}>{name}</Text>
     <MaterialIcon name="chevron-right" size={16} />
   </TouchableOpacity>
 );
@@ -46,17 +46,18 @@ export const AddIngredientScreen = () => {
       <IngredientInput />
       <FlatList
         data={spiceData.filter(
-          (data) => !ingredientsData.map((ing) => ing.id).includes(data.id),
+          (data) =>
+            !ingredientsData.map((ing) => ing.spiceId).includes(data.spiceId),
         )}
         renderItem={({ item }) => (
           <Item
-            title={item.title}
-            id={item.id}
+            name={item.name}
+            spiceId={item.spiceId}
             navigator={navigator}
             setSelectedIngredient={setSelectedIngredient}
           />
         )}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.spiceId}
         style={styles.list}
       />
     </View>

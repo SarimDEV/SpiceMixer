@@ -34,8 +34,8 @@ export const SearchRecipeScreen = () => {
   const getRecipes = async () => {
     const res = await axios.get('/api/recipe/publish');
     setRecipes(res.data.response);
-    console.log(res.status);
-    console.log(res.data.response);
+    // console.log(res.status);
+    // console.log(res.data.response);
   };
 
   useEffect(() => {

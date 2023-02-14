@@ -42,7 +42,9 @@ export const SelectAmountScreen = () => {
 
   const addIngredient = (amount) => {
     const newSelectedIngredient = { ...selectedIngredient, amount };
+    console.log('here', ingredientsData);
     const newState = [...ingredientsData, newSelectedIngredient];
+    console.log('test', newState);
     setIngredientsData(newState);
   };
 

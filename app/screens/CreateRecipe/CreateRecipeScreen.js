@@ -30,27 +30,54 @@ import { BackButton } from '../../common/button/BackButton';
 import { uploadFile } from '../../components/recipe-editor/uploadFile';
 import { AppDivider } from '../../common/divider/AppDivider';
 
-const Item = ({ title, amount, deleteIngredient }) => (
+const Item = ({ name, amount, deleteIngredient }) => (
   <View style={styles.item}>
-    <Ingredient name={title} amount={amount} onDelete={deleteIngredient} />
+    <Ingredient name={name} amount={amount} onDelete={deleteIngredient} />
   </View>
 );
 
 const Spacer = () => <View style={styles.spacer} />;
 
-export const CreateRecipeScreen = () => {
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
+export const CreateRecipeScreen = ({ route }) => {
+  const { isEdit, item } = route.params || {};
+  const navigator = useNavigation();
+  const { user } = useAuth();
+  const [title, setTitle] = useState(item ? item.title : '');
+  const [description, setDescription] = useState(item ? item.description : '');
   const [ingredientsData, setIngredientsData] = useRecoilState(
     createIngredientState,
   );
-  const [image, setImage] = useState();
-  const navigator = useNavigation();
-  const { user } = useAuth();
+  const [isEditMode, setIsEditMode] = useState(isEdit ? true : false);
+  const [currItem, setCurrItem] = useState(item ? item : {});
+  const [image, setImage] = useState(
+    item
+      ? {
+          assets: [{ uri: item.image }],
+        }
+      : undefined,
+  );
+
+  useEffect(() => {
+    return () => {
+      setIngredientsData([]);
+    };
+  }, [setIngredientsData]);
+
+  useEffect(() => {
+    if (currItem && currItem.ingredients) {
+      setIngredientsData(
+        currItem.ingredients.map((ingredient) => ({
+          spiceId: ingredient.spiceId,
+          name: ingredient.name,
+          amount: ingredient.amount,
+        })),
+      );
+    }
+  }, [setIngredientsData, currItem]);
 
   const createRecipe = async () => {
     let imageUri;
-    if (image) {
+    if (image && image.assets) {
       imageUri = await uploadFile(image.assets[0].uri);
     }
 
@@ -63,22 +90,38 @@ export const CreateRecipeScreen = () => {
       image: imageUri,
     });
 
-    console.log(res.data);
+    // console.log(res.data);
+    // console.log('successfully made');
+    navigator.navigate('your-recipes-screen');
+  };
+
+  const editRecipe = async () => {
+    let imageUri;
+    if (image && image.assets) {
+      if (currItem && image.assets[0].uri === currItem.image) {
+        imageUri = currItem.image;
+      } else {
+        imageUri = await uploadFile(image.assets[0].uri);
+      }
+    }
+
+    await axios.put(`/api/recipe/update/${currItem._id}`, {
+      title,
+      description,
+      ingredients: ingredientsData,
+      image: imageUri,
+    });
+
+    // console.log(res.data);
     console.log('successfully made');
     navigator.navigate('your-recipes-screen');
   };
 
   const deleteIngredient = async (toDeleteId) => {
     setIngredientsData(
-      ingredientsData.filter((something) => something.id !== toDeleteId),
+      ingredientsData.filter((something) => something.spiceId !== toDeleteId),
     );
   };
-
-  useEffect(() => {
-    return () => {
-      setIngredientsData([]);
-    };
-  }, []);
 
   const input = () => (
     <>
@@ -113,12 +156,12 @@ export const CreateRecipeScreen = () => {
           data={ingredientsData}
           renderItem={({ item }) => (
             <Item
-              title={item.title}
+              name={item.name}
               amount={item.amount}
-              deleteIngredient={() => deleteIngredient(item.id)}
+              deleteIngredient={() => deleteIngredient(item.spiceId)}
             />
           )}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(spice) => spice.spiceId}
           style={styles.list}
         />
         <AppDivider />
@@ -136,10 +179,11 @@ export const CreateRecipeScreen = () => {
         }}
       />
       <AppButton
-        label={'Save'}
+        label={isEditMode ? 'Edit' : 'Save'}
         primary
         onPress={() => {
-          createRecipe();
+          console.log(isEditMode);
+          isEditMode ? editRecipe() : createRecipe();
         }}
       />
     </View>

@@ -17,7 +17,7 @@ export function useAuth() {
       async (newUser) => {
         try {
           if (newUser) {
-            console.log(newUser);
+            // console.log(newUser);
             setUser(newUser);
             if (newUser.displayName) {
               setDisplayName(newUser.displayName);

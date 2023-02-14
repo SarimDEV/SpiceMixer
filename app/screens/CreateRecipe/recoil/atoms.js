@@ -9,8 +9,8 @@ export const createIngredientState = atom({
 export const selectedIngredientState = atom({
   key: 'selectedIngredientState',
   default: {
-    id: '',
-    title: '',
+    spiceId: '',
+    name: '',
     amount: '',
   },
 });

@@ -82,13 +82,13 @@ export const amountData = [
 ];
 
 export const spiceData = [
-  { id: 1, title: 'Garlic powder' },
-  { id: 2, title: 'Cinnamon' },
-  { id: 3, title: 'Onion powder' },
-  { id: 4, title: 'Paprika' },
-  { id: 5, title: 'Cumin' },
-  { id: 6, title: 'Turmeric' },
-  { id: 7, title: 'Black pepper' },
-  { id: 8, title: 'Coriander powder' },
-  { id: 9, title: 'Salt' },
+  { spiceId: 1, name: 'Garlic powder' },
+  { spiceId: 2, name: 'Cinnamon' },
+  { spiceId: 3, name: 'Onion powder' },
+  { spiceId: 4, name: 'Paprika' },
+  { spiceId: 5, name: 'Cumin' },
+  { spiceId: 6, name: 'Turmeric' },
+  { spiceId: 7, name: 'Black pepper' },
+  { spiceId: 8, name: 'Coriander powder' },
+  { spiceId: 9, name: 'Salt' },
 ];
