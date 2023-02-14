@@ -81,7 +81,6 @@ exports.update = async (req, res) => {
 
 exports.delete = async (req, res) => {
   if (!req.params.id || !req.body.uid) {
-    console.log("recipe id: ", req.params.id, " UID: ", req.body.uid)
     return res.status(400).send({ message: `Content cannot be empty` });
   }
   const recipeId = req.params.id;
@@ -90,7 +89,6 @@ exports.delete = async (req, res) => {
   try {
     const response = await Recipe.findByIdAndRemove(recipeId)
     if (!response) {
-      console.log("something wrong witu this")
       return res.status(404).send({
         message: `Recipe was not found, error deleting recipe with id=${recipeId}`
       });
