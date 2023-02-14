@@ -22,9 +22,13 @@ import { SearchInput } from '../../components/search/SearchInput';
 import { Title } from '../../components/title/Title';
 import { amountData } from '../../data';
 
-const Item = ({ title }) => (
+const Item = ({ item }) => (
   <TouchableOpacity activeOpacity={0.75} style={styles.item}>
-    <Recipe title={title} />
+    <Recipe
+      title={item.title}
+      description={item.description}
+      image={item.image}
+    />
   </TouchableOpacity>
 );
 
@@ -52,7 +56,7 @@ export const SearchRecipeScreen = () => {
       </View>
       <FlatList
         data={recipes}
-        renderItem={({ item }) => <Item title={item.title} />}
+        renderItem={({ item }) => <Item item={item} />}
         keyExtractor={(item) => item.id}
         style={styles.list}
       />

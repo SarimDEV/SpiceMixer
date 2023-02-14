@@ -10,6 +10,7 @@ import {
   SafeAreaView,
   FlatList,
   TouchableHighlight,
+  Image,
 } from 'react-native';
 
 import { COLORS, DIM } from '../../common';
@@ -48,6 +49,15 @@ const Item = ({ item, navigator }) => (
 
 const FooterItem = () => <View marginBottom={75} />;
 
+const NoRecipes = () => (
+  <View>
+    <Image
+      style={{ width: '100%' }}
+      source={require('../../public/images/no-food.png')}
+    />
+  </View>
+);
+
 export const YourRecipesScreen = () => {
   const { user } = useAuth();
   const displayName = useRecoilValue(authDisplayName);
@@ -74,6 +84,7 @@ export const YourRecipesScreen = () => {
             <MaterialIcon name="search" size={32} />
           </TouchableOpacity>
         </View>
+        {/* <NoRecipes /> */}
         <FlatList
           data={recipes}
           renderItem={({ item }) => <Item item={item} navigator={navigator} />}
