@@ -56,6 +56,7 @@ export const CreateRecipeScreen = ({ route }) => {
         }
       : undefined,
   );
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     return () => {
@@ -92,6 +93,7 @@ export const CreateRecipeScreen = ({ route }) => {
 
     // console.log(res.data);
     // console.log('successfully made');
+    setLoading(false);
     navigator.navigate('your-recipes-screen');
   };
 
@@ -114,6 +116,7 @@ export const CreateRecipeScreen = ({ route }) => {
 
     // console.log(res.data);
     console.log('successfully made');
+    setLoading(false);
     navigator.navigate('your-recipes-screen');
   };
 
@@ -179,10 +182,11 @@ export const CreateRecipeScreen = ({ route }) => {
         }}
       />
       <AppButton
+        loading={loading}
         label={isEditMode ? 'Edit' : 'Save'}
         primary
         onPress={() => {
-          console.log(isEditMode);
+          setLoading(true);
           isEditMode ? editRecipe() : createRecipe();
         }}
       />

@@ -52,7 +52,7 @@ const handleSignUp = async (
 };
 
 export const SignupScreen = () => {
-  const { user, setSigningUp } = useAuth();
+  const { user, signingUp, setSigningUp } = useAuth();
   const navigator = useNavigation();
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
@@ -69,7 +69,7 @@ export const SignupScreen = () => {
     if (error) {
       setError(false);
     }
-  }, [email, name, password, error]);
+  }, [email, name, password]);
 
   const successCallback = () => {
     setDisplayName(name);
@@ -120,6 +120,7 @@ export const SignupScreen = () => {
       />
       <Spacer />
       <AppButton
+        loading={signingUp}
         label={'Sign Up'}
         primary
         onPress={() => {

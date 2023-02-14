@@ -38,19 +38,22 @@ export const LoginScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const signUpError = (code, message) => {
     setError(message ? message : 'Could not sign up user');
+    setLoading(false);
   };
 
   useEffect(() => {
     if (error) {
       setError(false);
     }
-  }, [email, password, error]);
+  }, [email, password]);
 
   const successCallback = (result) => {
     console.log('SUCCESS');
+    setLoading(false);
   };
 
   return (
@@ -88,11 +91,13 @@ export const LoginScreen = () => {
         />
         <Spacer />
         <AppButton
+          loading={loading}
           label={'Login'}
           primary
-          onPress={() =>
-            handleLogin(email, password, successCallback, signUpError)
-          }
+          onPress={() => {
+            setLoading(true);
+            handleLogin(email, password, successCallback, signUpError);
+          }}
         />
       </View>
     </KeyboardAvoidingView>

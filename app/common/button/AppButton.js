@@ -7,14 +7,19 @@ import {
   TouchableOpacity,
   TextInput,
   SafeAreaView,
+  ActivityIndicator,
 } from 'react-native';
 
 import { COLORS } from '../../common';
 
-export const AppButton = ({ label, onPress, primary }) => {
+export const AppButton = ({ label, onPress, primary, loading }) => {
   return (
     <TouchableOpacity style={style.container(primary)} onPress={onPress}>
-      <Text style={style.label(primary)}>{label}</Text>
+      {loading ? (
+        <ActivityIndicator />
+      ) : (
+        <Text style={style.label(primary)}>{label}</Text>
+      )}
     </TouchableOpacity>
   );
 };
