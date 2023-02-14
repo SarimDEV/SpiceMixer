@@ -29,6 +29,7 @@ import {
 } from '@react-navigation/native';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { authDisplayName } from '../../auth/atoms';
+import { EmptyStatePicture } from '../../common/empty-state/EmptyStatePicture';
 
 const Item = ({ item, navigator }) => (
   <TouchableOpacity activeOpacity={0.75} style={styles.item}>
@@ -50,12 +51,11 @@ const Item = ({ item, navigator }) => (
 const FooterItem = () => <View marginBottom={75} />;
 
 const NoRecipes = () => (
-  <View>
-    <Image
-      style={{ width: '100%' }}
-      source={require('../../public/images/no-food.png')}
-    />
-  </View>
+  <EmptyStatePicture
+    title={"You don't have any spice mixes!"}
+    description={'Search and find a spice mix you like, or create your own!'}
+    source={require('../../public/images/no-food.png')}
+  />
 );
 
 export const YourRecipesScreen = () => {
@@ -84,14 +84,19 @@ export const YourRecipesScreen = () => {
             <MaterialIcon name="search" size={32} />
           </TouchableOpacity>
         </View>
-        {/* <NoRecipes /> */}
-        <FlatList
-          data={recipes}
-          renderItem={({ item }) => <Item item={item} navigator={navigator} />}
-          keyExtractor={(item) => item.id}
-          style={styles.list}
-          ListFooterComponent={<FooterItem />}
-        />
+        {recipes ? (
+          <FlatList
+            data={recipes}
+            renderItem={({ item }) => (
+              <Item item={item} navigator={navigator} />
+            )}
+            keyExtractor={(item) => item.id}
+            style={styles.list}
+            ListFooterComponent={<FooterItem />}
+          />
+        ) : (
+          <NoRecipes />
+        )}
       </View>
       <AddRecipeButton />
     </>
