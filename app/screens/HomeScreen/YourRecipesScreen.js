@@ -32,7 +32,12 @@ import { authDisplayName } from '../../auth/atoms';
 import { EmptyStatePicture } from '../../common/empty-state/EmptyStatePicture';
 
 const Item = ({ item, navigator }) => (
-  <TouchableOpacity activeOpacity={0.75} style={styles.item}>
+  <TouchableOpacity activeOpacity={0.75} style={styles.item} 
+  onPress={() => {
+    navigator.navigate('view-recipe-screen', {
+      isEdit: true,
+      item,
+  })}}>
     <Recipe
       title={item.title}
       icon={'edit'}
@@ -49,6 +54,9 @@ const Item = ({ item, navigator }) => (
 );
 
 const FooterItem = () => <View marginBottom={75} />;
+// const viewRecipe = (navigator) => {
+//   navigator.navigate('view-recipe-screen')
+// }
 
 const NoRecipes = () => (
   <EmptyStatePicture
@@ -67,6 +75,7 @@ export const YourRecipesScreen = () => {
 
   useEffect(() => {
     const getRecipes = async () => {
+      console.log(`/api/user/read/${user.uid}`)
       const res = await axios.get(`/api/user/read/${user.uid}`);
       setRecipes(res.data[0].recipes);
       // console.log(res.data[0].recipes);

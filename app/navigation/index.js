@@ -10,8 +10,10 @@ import { AddIngredientScreen } from '../screens/CreateRecipe/AddIngredientScreen
 import { CreateRecipeScreen } from '../screens/CreateRecipe/CreateRecipeScreen';
 import { SelectAmountScreen } from '../screens/CreateRecipe/SelectAmountScreen';
 import { YourRecipesScreen } from '../screens/HomeScreen/YourRecipesScreen';
+import { ViewRecipeScreen } from '../screens/ViewRecipe/ViewRecipeScreen';
 import { Connect } from '../Connect';
 import { BluetoothScreen } from '../screens/Bluetooth/BluetoothScreen';
+import { View } from 'react-native';
 
 const Stack = createNativeStackNavigator();
 
@@ -102,36 +104,11 @@ function UserNavigator() {
             component={BluetoothScreen}
             options={{ headerShown: false }}
           />
-          {/* <UserStack.Screen
-      name="FriendsChat"
-      component={ChatScreen}
-      options={{ headerShown: false }}
-    />
-    <UserStack.Screen
-      name="PodsChat"
-      component={PodsChatScreen}
-      options={{ headerShown: false }}
-    />
-    <UserStack.Screen
-      name="AddFriends"
-      component={AddFriendsScreen}
-      options={{ headerShown: false }}
-    />
-    <UserStack.Screen
-      name="Edit Profile"
-      component={EditProfile}
-      options={{ headerShown: false }}
-    />
-    <UserStack.Screen
-      name="Friends Profile"
-      component={FriendsProfileScreen}
-      options={{ headerShown: false }}
-    />
-    <UserStack.Screen
-      name="Group Friends"
-      component={GroupFriendsScreen}
-      options={{ headerShown: false }}
-    /> */}
+          <UserStack.Screen
+            name="view-recipe-screen"
+            component={ViewRecipeScreen}
+            options={{ headerShown: false }}
+          />
         </UserStack.Group>
       </UserStack.Navigator>
     </>

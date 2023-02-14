@@ -1,83 +1,83 @@
 export const amountData = [
   {
     id: '1',
-    title: '1 tsb',
+    title: '1 tsp',
   },
   {
     id: '2',
-    title: '2 tsb',
+    title: '2 tsp',
   },
   {
     id: '3',
-    title: '3 tsb (1 tbsb)',
+    title: '3 tsp (1 tbsp)',
   },
   {
     id: '4',
-    title: '4 tsb',
+    title: '4 tsp',
   },
   {
     id: '5',
-    title: '5 tsb',
+    title: '5 tsp',
   },
   {
     id: '6',
-    title: '6 tsb (2 tbsb)',
+    title: '6 tsp (2 tbsp)',
   },
   {
     id: '7',
-    title: '7 tsb',
+    title: '7 tsp',
   },
   {
     id: '8',
-    title: '8 tsb',
+    title: '8 tsp',
   },
   {
     id: '9',
-    title: '9 tsb (3 tbsb)',
+    title: '9 tsp (3 tbsp)',
   },
   {
     id: '10',
-    title: '10 tsb',
+    title: '10 tsp',
   },
   {
     id: '11',
-    title: '11 tsb',
+    title: '11 tsp',
   },
   {
     id: '12',
-    title: '12 tsb (4 tbsb)',
+    title: '12 tsp (4 tbsp)',
   },
   {
     id: '13',
-    title: '13 tsb',
+    title: '13 tsp',
   },
   {
     id: '14',
-    title: '14 tsb',
+    title: '14 tsp',
   },
   {
     id: '15',
-    title: '15 tsb (4 tbsb)',
+    title: '15 tsp (4 tbsp)',
   },
   {
     id: '16',
-    title: '16 tsb',
+    title: '16 tsp',
   },
   {
     id: '17',
-    title: '17 tsb',
+    title: '17 tsp',
   },
   {
     id: '18',
-    title: '18 tsb (5 tbsb)',
+    title: '18 tsp (5 tbsp)',
   },
   {
     id: '19',
-    title: '19 tsb',
+    title: '19 tsp',
   },
   {
     id: '20',
-    title: '20 tsb',
+    title: '20 tsp',
   },
 ];
 

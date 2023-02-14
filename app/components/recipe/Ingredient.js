@@ -16,11 +16,15 @@ export const Ingredient = ({ name, amount, onDelete }) => {
     <View style={styles.container}>
       <View style={styles.content}>
         <Text style={styles.name}>{name}</Text>
-        <Text style={styles.amount}>{amount} tsb</Text>
+        <Text style={styles.amount}>{amount} tsp</Text>
       </View>
+      { onDelete && 
       <TouchableOpacity onPress={onDelete}>
         <MaterialIcon name="close" size={16} />
-      </TouchableOpacity>
+      </TouchableOpacity>}
+      {/* <TouchableOpacity onPress={onDelete}>
+        <MaterialIcon name="close" size={16} />
+      </TouchableOpacity> */}
     </View>
   );
 };
