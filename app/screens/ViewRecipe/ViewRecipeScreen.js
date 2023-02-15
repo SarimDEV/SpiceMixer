@@ -26,7 +26,7 @@ const Item = ({ title, amount}) => (
 );
 
 export const ViewRecipeScreen = ({ route }) => {
-    const { item } = route.params || {};
+    const { item, isPublic } = route.params || {};
   const [ingredientsData, setIngredientsData] = useRecoilState(
     createIngredientState,
   );
@@ -93,6 +93,19 @@ const [isPublished, setIsPublished] = useState(item.published);
     }
   }
 
+  const handleSave = async () => {
+    try {
+        await axios.post(`/api/recipe/create`, { 
+            ...item, 
+            uid: user.uid, 
+            username: user.displayName 
+        })
+        navigator.navigate('your-recipes-screen')
+    } catch (error) {
+        console.log(error)
+    }
+  }
+
   const buttons = () => (
     <View style={styles.buttonContainer}>
       <AppButton
@@ -101,7 +114,6 @@ const [isPublished, setIsPublished] = useState(item.published);
           navigator.navigate('bluetooth-screen');
         }}
       />
-      {console.log("ITEM", item)}
       {isPublished ? 
             <AppButton
             label={'Unshare'}
@@ -118,6 +130,16 @@ const [isPublished, setIsPublished] = useState(item.published);
 
     </View>
   );
+  const saveButton = () => (
+    <View style={styles.buttonContainer}>
+      <AppButton
+        label={'Save'}
+        primary
+        onPress={() => handleSave()}
+      />
+    </View>
+  );
+
 
   const handleDelete = async () => {
     setConfigDelete(true)
@@ -139,12 +161,13 @@ const [isPublished, setIsPublished] = useState(item.published);
     <View style={styles.box}>
         <View style = {styles.topContainer}>
         <BackButton navigator={navigator}/>
+        { !isPublic && 
         <TouchableOpacity onPress ={() => {handleDelete()}}>
             { configDelete ? 
             <MaterialIcon name="delete" size={24} /> :
             <MaterialIcon name="delete-outline" size={24} />
             }
-        </TouchableOpacity>
+        </TouchableOpacity>}
         </View>
         <Image
             style={styles.spicePhoto}
@@ -161,7 +184,7 @@ const [isPublished, setIsPublished] = useState(item.published);
       <Text style={{ color: 'grey'}}>Spices</Text>
       <AppDivider/>
       {ingredients()}
-      {buttons()}
+      { isPublic ? saveButton() : buttons()}
     </View>
   );
 };

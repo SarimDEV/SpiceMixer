@@ -75,10 +75,8 @@ export const YourRecipesScreen = () => {
 
   useEffect(() => {
     const getRecipes = async () => {
-      console.log(`/api/user/read/${user.uid}`)
       const res = await axios.get(`/api/user/read/${user.uid}`);
       setRecipes(res.data[0].recipes);
-      // console.log(res.data[0].recipes);
     };
     getRecipes();
   }, [isFocused, user]);

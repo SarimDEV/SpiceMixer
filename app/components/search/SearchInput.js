@@ -10,8 +10,8 @@ import {
 import { COLORS } from '../../common';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 
-export const SearchInput = () => {
-  const [text, onChangeText] = useState('');
+export const SearchInput = ({text, onChangeText}) => {
+  // const [text, onChangeText] = useState('');
 
   return (
     <View style={styles.container}>

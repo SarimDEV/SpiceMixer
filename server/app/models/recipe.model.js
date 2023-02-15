@@ -9,7 +9,8 @@ module.exports = mongoose => {
       }],
       description: String,
       published: Boolean,
-      image: String
+      image: String,
+      username: String
     },
     { timestamps: true }
   );

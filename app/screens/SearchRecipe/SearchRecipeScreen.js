@@ -22,25 +22,47 @@ import { SearchInput } from '../../components/search/SearchInput';
 import { Title } from '../../components/title/Title';
 import { amountData } from '../../data';
 
-const Item = ({ item }) => (
-  <TouchableOpacity activeOpacity={0.75} style={styles.item}>
-    <Recipe
-      title={item.title}
-      description={item.description}
-      image={item.image}
-    />
-  </TouchableOpacity>
-);
-
 export const SearchRecipeScreen = () => {
   const navigator = useNavigation();
   const [recipes, setRecipes] = useState([]);
+  const [initRecipes, setInitRecipes] = useState([]);
+  const [search, setSearch] = useState([]);
   const getRecipes = async () => {
     const res = await axios.get('/api/recipe/publish');
-    setRecipes(res.data.response);
+    setRecipes(res.data.response.sort((a, b) => a.updatedAt < b.updatedAt));
+    setInitRecipes(res.data.response.sort((a, b) => a.updatedAt < b.updatedAt));
     // console.log(res.status);
     // console.log(res.data.response);
   };
+
+  const handleSearch = (text) => {
+    setSearch(text);
+    // console.log(initRecipes);
+    // const newRecipes = initRecipes.filter((recipe) => {
+    //   if (recipe && recipe.title && recipe.description && recipe.username) {
+    //     return (recipe.title.includes(text) || recipe.description.includes(text) || recipe.username.includes(text))
+    //   }
+    // })
+    // setRecipes(newRecipes);
+  }
+
+  const handleViewScreen = (item) => {
+    navigator.navigate('view-recipe-screen', {
+      item,
+      isPublic: true
+    })
+  }
+
+  const Item = ({ item }) => (
+    <TouchableOpacity activeOpacity={0.75} style={styles.item} onPress={() => handleViewScreen(item)}>
+      <Recipe
+        title={item.title}
+        description={item.description}
+        image={item.image}
+        username={item.username}
+      />
+    </TouchableOpacity>
+  );
 
   useEffect(() => {
     getRecipes();
@@ -51,7 +73,7 @@ export const SearchRecipeScreen = () => {
       <View style={styles.headerContainer}>
         <BackButton navigator={navigator} />
         <View style={styles.searchInputContainer}>
-          <SearchInput />
+          <SearchInput text={search} onChangeText={handleSearch} />
         </View>
       </View>
       <FlatList

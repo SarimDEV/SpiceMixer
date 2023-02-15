@@ -89,6 +89,7 @@ export const CreateRecipeScreen = ({ route }) => {
       published: false,
       uid: user.uid,
       image: imageUri,
+      username: user.displayName
     });
 
     // console.log(res.data);
@@ -113,9 +114,6 @@ export const CreateRecipeScreen = ({ route }) => {
       ingredients: ingredientsData,
       image: imageUri,
     });
-
-    // console.log(res.data);
-    console.log('successfully made');
     setLoading(false);
     navigator.navigate('your-recipes-screen');
   };
@@ -177,7 +175,6 @@ export const CreateRecipeScreen = ({ route }) => {
       <AppButton
         label={'Add an Ingredient'}
         onPress={() => {
-          console.log(ingredientsData);
           navigator.navigate('add-ingredient-screen');
         }}
       />

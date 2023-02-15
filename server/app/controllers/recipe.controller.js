@@ -3,7 +3,7 @@ const Recipe = db.recipe;
 const User = db.user;
 
 exports.create = async (req, res) => {
-  if (!req.body.title || !req.body.ingredients || !req.body.uid) {
+  if (!req.body.title || !req.body.ingredients || !req.body.uid || !req.body.username) {
     res.status(400).send({ message: "Content can not be empty!" });
     return;
   }
@@ -13,7 +13,8 @@ exports.create = async (req, res) => {
     ingredients: req.body.ingredients,
     description: req.body.description,
     published: false,
-    image: req.body.image
+    image: req.body.image,
+    username: req.body.username
   });
   let recipeId;
 
