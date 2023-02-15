@@ -32,12 +32,15 @@ import { authDisplayName } from '../../auth/atoms';
 import { EmptyStatePicture } from '../../common/empty-state/EmptyStatePicture';
 
 const Item = ({ item, navigator }) => (
-  <TouchableOpacity activeOpacity={0.75} style={styles.item} 
-  onPress={() => {
-    navigator.navigate('view-recipe-screen', {
-      isEdit: true,
-      item,
-  })}}>
+  <TouchableOpacity
+    activeOpacity={0.75}
+    style={styles.item}
+    onPress={() => {
+      navigator.navigate('view-recipe-screen', {
+        isEdit: true,
+        item,
+      });
+    }}>
     <Recipe
       title={item.title}
       icon={'edit'}
@@ -91,7 +94,7 @@ export const YourRecipesScreen = () => {
             <MaterialIcon name="search" size={32} />
           </TouchableOpacity>
         </View>
-        {recipes ? (
+        {recipes.length > 0 ? (
           <FlatList
             data={recipes}
             renderItem={({ item }) => (
