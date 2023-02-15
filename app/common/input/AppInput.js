@@ -37,15 +37,15 @@ export const AppInput = ({
 const styles = StyleSheet.create({
   input: (type, multiline) => ({
     borderRadius: 15,
-    marginLeft: 12,
+    paddingHorizontal: 12,
     height: multiline ? 100 : 45,
-    width: '100%',
+    flex: 1,
   }),
   container: (type, multiline) => ({
     flexDirection: 'row',
     paddingHorizontal: 10,
+    paddingTop: multiline ? 10 : undefined,
     alignItems: multiline ? 'baseline' : 'center',
-    // backgroundColor: COLORS.darkGrey,
     borderRadius: 18,
     borderWidth: 0.2,
     borderColor: 'grey',
