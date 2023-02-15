@@ -1,5 +1,5 @@
 {
-  "name": "example",
+  "name": "spice-mixer",
   "version": "0.0.1",
   "private": true,
   "scripts": {
@@ -7,6 +7,7 @@
     "build:ios": "react-native bundle --entry-file='index.js' --bundle-output='./ios/main.jsbundle' --dev=false --platform='ios'",
     "ios": "react-native run-ios",
     "start": "react-native start",
+    "eject": "react-native upgrade --legacy true",
     "test": "jest",
     "lint": "eslint ."
   },
@@ -24,6 +25,7 @@
     "react-native-image-picker": "^5.0.1",
     "react-native-safe-area-context": "^4.5.0",
     "react-native-screens": "^3.19.0",
+    "react-native-splash-screen": "^3.3.0",
     "react-native-uuid": "^2.0.1",
     "react-native-vector-icons": "^9.2.0",
     "recoil": "^0.7.6"

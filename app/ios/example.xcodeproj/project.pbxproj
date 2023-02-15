@@ -555,7 +555,8 @@
 					"\"$(PODS_ROOT)/Headers/Private/React-Core\"",
 				);
 				INFOPLIST_FILE = example/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				INFOPLIST_KEY_CFBundleDisplayName = SpiceMixer;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -606,7 +607,8 @@
 					"\"$(PODS_ROOT)/Headers/Private/React-Core\"",
 				);
 				INFOPLIST_FILE = example/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				INFOPLIST_KEY_CFBundleDisplayName = SpiceMixer;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
