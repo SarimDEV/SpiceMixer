@@ -262,10 +262,17 @@ import {
   FlatList,
   TouchableHighlight,
 } from 'react-native';
+import { AppDivider } from '../../common/divider/AppDivider';
+import { BackButton } from '../../common/button/BackButton';
 
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 
 import BleManager from 'react-native-ble-manager';
+import { DIM } from '../../common';
+import { useNavigation } from '@react-navigation/native';
+import { BluetoothHeader } from '../../components/bluetooth/BluetoothHeader';
+import { BluetoothButton } from '../../components/bluetooth/BluetoothButton';
+import { BluetoothPeripheralList } from '../../components/bluetooth/BluetoothPeripheralList';
 const BleManagerModule = NativeModules.BleManager;
 const bleManagerEmitter = new NativeEventEmitter(BleManagerModule);
 
@@ -273,6 +280,7 @@ export const BluetoothScreen = () => {
   const [isScanning, setIsScanning] = useState(false);
   const peripherals = new Map();
   const [list, setList] = useState([]);
+  const navigator = useNavigation();
 
   const startScan = () => {
     if (!isScanning) {
@@ -287,8 +295,20 @@ export const BluetoothScreen = () => {
     }
   };
 
+  const stopScan = () => {
+    if (isScanning) {
+      BleManager.stopScan();
+      setList([]);
+    }
+  };
+
   const handleStopScan = () => {
     console.log('Scan is stopped');
+    setList([
+      { id: '1231', name: 'Fake Spice Mixer', rssi: 16, connected: false },
+      { id: '121', name: 'Fake Spice Mixer', rssi: 16, connected: false },
+      { id: '131', name: 'Fake Spice Mixer', rssi: 16, connected: false },
+    ]);
     setIsScanning(false);
   };
 
@@ -484,9 +504,56 @@ export const BluetoothScreen = () => {
       </TouchableHighlight>
     );
   };
+
+  const headerTitleAndDescription = () => {
+    if (isScanning) {
+      return {
+        title: 'Searching...',
+        description: 'Trying to find your spice mixer',
+        buttonTitle: 'Cancel',
+        buttonFnc: stopScan,
+        middleComponent: () => <></>,
+      };
+    }
+
+    if (list.length > 0) {
+      return {
+        title: 'Found some devices!',
+        description: 'Select your spice mixer from the list below',
+        buttonTitle: 'Cancel',
+        middleComponent: () => <BluetoothPeripheralList list={list} />,
+        buttonFnc: stopScan,
+      };
+    }
+
+    return {
+      title: 'Enable Bluetooth',
+      description: 'Scan for your device and get connected',
+      buttonTitle: 'Scan',
+      middleComponent: () => <></>,
+      buttonFnc: startScan,
+    };
+  };
+
   return (
-    <>
-      <ScrollView
+    <View style={styles.box}>
+      <View style={styles.headerBox}>
+        <BluetoothHeader
+          navigator={navigator}
+          title={headerTitleAndDescription().title}
+          description={headerTitleAndDescription().description}
+        />
+      </View>
+      <View style={styles.centerBox}>
+        {headerTitleAndDescription().middleComponent()}
+      </View>
+      <View style={styles.buttonBox}>
+        <BluetoothButton
+          title={headerTitleAndDescription().buttonTitle}
+          onPress={() => headerTitleAndDescription().buttonFnc()}
+        />
+      </View>
+      {/* <ScrollView
         contentInsetAdjustmentBehavior="automatic"
         style={styles.scrollView}>
         {global.HermesInternal == null ? null : (
@@ -495,13 +562,6 @@ export const BluetoothScreen = () => {
           </View>
         )}
         <View style={styles.body}>
-          <View style={{ margin: 10 }}>
-            <Button
-              title={'Scan Bluetooth (' + (isScanning ? 'on' : 'off') + ')'}
-              onPress={() => startScan()}
-            />
-          </View>
-
           <View style={{ margin: 10 }}>
             <Button
               title="Retrieve connected peripherals"
@@ -520,12 +580,28 @@ export const BluetoothScreen = () => {
         data={list}
         renderItem={({ item }) => renderItem(item)}
         keyExtractor={(item) => item.id}
-      />
-    </>
+      /> */}
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  headerBox: {
+    flex: 3,
+    // backgroundColor: 'red',
+  },
+  centerBox: {
+    flex: 10,
+    // backgroundColor: 'yellow',
+  },
+  buttonBox: {
+    flex: 2,
+    // backgroundColor: 'green',
+  },
+  box: {
+    marginHorizontal: DIM.appMargin,
+    flex: 1,
+  },
   scrollView: {
     backgroundColor: Colors.lighter,
   },
