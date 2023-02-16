@@ -268,7 +268,7 @@
 						TestTargetID = 13B07F861A680F5B00A75B9A;
 					};
 					13B07F861A680F5B00A75B9A = {
-						DevelopmentTeam = 8AH4H3THGT;
+						DevelopmentTeam = 895KQLFMT3;
 						LastSwiftMigration = 1120;
 					};
 				};
@@ -525,7 +525,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 8AH4H3THGT;
+				DEVELOPMENT_TEAM = 895KQLFMT3;
 				ENABLE_BITCODE = NO;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -563,7 +563,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = uw.fydp.g6.b3;
+				PRODUCT_BUNDLE_IDENTIFIER = uw.fydp.g6.b4;
 				PRODUCT_NAME = example;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -578,7 +578,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 8AH4H3THGT;
+				DEVELOPMENT_TEAM = 895KQLFMT3;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"${PODS_ROOT}/Headers/Public\"",
@@ -615,7 +615,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = uw.fydp.g6.b3;
+				PRODUCT_BUNDLE_IDENTIFIER = uw.fydp.g6.b4;
 				PRODUCT_NAME = example;
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";

@@ -20,12 +20,18 @@ const Item = ({ title, id, onPress }) => (
   </TouchableOpacity>
 );
 
-export const BluetoothPeripheralList = ({ list }) => {
+export const BluetoothPeripheralList = ({ list, connect }) => {
   return (
     <View style={styles.box}>
       <FlatList
         data={list}
-        renderItem={({ item }) => <Item title={item.name} id={item.id} />}
+        renderItem={({ item }) => (
+          <Item
+            title={item.name}
+            id={item.id}
+            onPress={() => connect(item.id, item.name)}
+          />
+        )}
         keyExtractor={(item) => item.id}
         style={styles.list}
       />

@@ -45,7 +45,7 @@
 //     let peripheral = peripherals.get(data.peripheral);
 //     if (peripheral) {
 //       peripheral.connected = false;
-//       peripherals.set(peripheral.id, peripheral);
+//       updatePeripherals(peripheral.id, peripheral);
 //       setList(Array.from(peripherals.values()));
 //     }
 //     console.log('Disconnected from ' + data.peripheral);
@@ -70,7 +70,7 @@
 //       for (var i = 0; i < results.length; i++) {
 //         var peripheral = results[i];
 //         peripheral.connected = true;
-//         peripherals.set(peripheral.id, peripheral);
+//         updatePeripherals(peripheral.id, peripheral);
 //         setList(Array.from(peripherals.values()));
 //       }
 //     });
@@ -81,7 +81,7 @@
 //     if (!peripheral.name) {
 //       peripheral.name = 'NO NAME';
 //     }
-//     peripherals.set(peripheral.id, peripheral);
+//     updatePeripherals(peripheral.id, peripheral);
 //     setList(Array.from(peripherals.values()));
 //   };
 
@@ -95,7 +95,7 @@
 //             let p = peripherals.get(peripheral.id);
 //             if (p) {
 //               p.connected = true;
-//               peripherals.set(peripheral.id, p);
+//               updatePeripherals(peripheral.id, p);
 //               setList(Array.from(peripherals.values()));
 //             }
 //             console.log('Connected to ' + peripheral.id);
@@ -126,7 +126,7 @@
 //                     let p = peripherals.get(peripheral.id);
 //                     if (p) {
 //                       p.rssi = rssi;
-//                       peripherals.set(peripheral.id, p);
+//                       updatePeripherals(peripheral.id, p);
 //                       setList(Array.from(peripherals.values()));
 //                     }
 //                   });

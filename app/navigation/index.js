@@ -16,6 +16,7 @@ import { ConfigureContainerScreen } from '../screens/Bluetooth/ConfigureContaine
 import { Connect } from '../Connect';
 import { BluetoothScreen } from '../screens/Bluetooth/BluetoothScreen';
 import { View } from 'react-native';
+import { BleRoot } from '../BleRoot';
 
 const Stack = createNativeStackNavigator();
 
@@ -71,7 +72,7 @@ const UserStack = createNativeStackNavigator();
 
 function UserNavigator() {
   return (
-    <>
+    <BleRoot>
       <Topbar />
       <UserStack.Navigator initialRouteName="configure-device-screen">
         <UserStack.Group>
@@ -123,6 +124,6 @@ function UserNavigator() {
           />
         </UserStack.Group>
       </UserStack.Navigator>
-    </>
+    </BleRoot>
   );
 }
