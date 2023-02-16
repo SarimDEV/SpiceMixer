@@ -4,6 +4,9 @@ import { RecoilRoot } from 'recoil';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { RootNavigator } from './navigation';
 import SplashScreen from 'react-native-splash-screen';
+import { Topbar } from './components/topbar/Topbar';
+import { ConfigureDeviceScreen } from './screens/Bluetooth/ConfigureDevice';
+import { ConfigureContainerScreen } from './screens/Bluetooth/ConfigureContainer';
 
 const MyTheme = {
   ...DefaultTheme,
@@ -24,7 +27,9 @@ const App = () => {
       <RecoilRoot>
         <StatusBar barStyle="dark-content" />
         <SafeAreaView style={styles.appContainer}>
-          {/* <Topbar></Topbar> */}
+          {/* <Topbar></Topbar>
+          <ConfigureDeviceScreen /> */}
+          {/* <ConfigureContainerScreen /> */}
           <RootNavigator />
           {/* <RootNavigator /> */}
           {/* <SignupScreen /> */}

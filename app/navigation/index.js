@@ -11,6 +11,8 @@ import { CreateRecipeScreen } from '../screens/CreateRecipe/CreateRecipeScreen';
 import { SelectAmountScreen } from '../screens/CreateRecipe/SelectAmountScreen';
 import { YourRecipesScreen } from '../screens/HomeScreen/YourRecipesScreen';
 import { ViewRecipeScreen } from '../screens/ViewRecipe/ViewRecipeScreen';
+import { ConfigureDeviceScreen } from '../screens/Bluetooth/ConfigureDevice';
+import { ConfigureContainerScreen } from '../screens/Bluetooth/ConfigureContainer';
 import { Connect } from '../Connect';
 import { BluetoothScreen } from '../screens/Bluetooth/BluetoothScreen';
 import { View } from 'react-native';
@@ -71,7 +73,7 @@ function UserNavigator() {
   return (
     <>
       <Topbar />
-      <UserStack.Navigator initialRouteName="your-recipes-screen">
+      <UserStack.Navigator initialRouteName="configure-device-screen">
         <UserStack.Group>
           <UserStack.Screen
             name="your-recipes-screen"
@@ -107,6 +109,16 @@ function UserNavigator() {
           <UserStack.Screen
             name="view-recipe-screen"
             component={ViewRecipeScreen}
+            options={{ headerShown: false }}
+          />
+          <UserStack.Screen
+            name="configure-device-screen"
+            component={ConfigureDeviceScreen}
+            options={{ headerShown: false }}
+          />
+          <UserStack.Screen
+            name="configure-container-screen"
+            component={ConfigureContainerScreen}
             options={{ headerShown: false }}
           />
         </UserStack.Group>
