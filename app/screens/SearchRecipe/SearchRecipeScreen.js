@@ -59,7 +59,7 @@ export const SearchRecipeScreen = () => {
         title={item.title}
         description={item.description}
         image={item.image}
-        username={item.username}
+        username={item.username.split(' ')[0]}
       />
     </TouchableOpacity>
   );

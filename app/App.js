@@ -8,8 +8,7 @@ import { Topbar } from './components/topbar/Topbar';
 import { ConfigureDeviceScreen } from './screens/Bluetooth/ConfigureDevice';
 import { ConfigureContainerScreen } from './screens/Bluetooth/ConfigureContainer';
 import { LogBox } from 'react-native';
-LogBox.ignoreLogs(['Warning: ...']); // Ignore log notification by message
-LogBox.ignoreAllLogs(); //Ignore all log notifications
+LogBox.ignoreAllLogs();
 
 const MyTheme = {
   ...DefaultTheme,

@@ -5,7 +5,8 @@ import {
   StyleSheet,
   TouchableOpacity,
   FlatList,
-  Image
+  Image,
+  ScrollView
 } from 'react-native';
 import { COLORS, DIM } from '../../common';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
@@ -158,6 +159,7 @@ const [isPublished, setIsPublished] = useState(item.published);
   }
 
   return (
+    <ScrollView style={styles.scrollview}>
     <View style={styles.box}>
         <View style = {styles.topContainer}>
         <BackButton navigator={navigator}/>
@@ -186,10 +188,14 @@ const [isPublished, setIsPublished] = useState(item.published);
       {ingredients()}
       { isPublic ? saveButton() : buttons()}
     </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
+  scrollview:{
+    marginVertical: 16
+  },
   box: {
     marginTop: 16,
     marginHorizontal: DIM.appMargin,
