@@ -74,7 +74,7 @@ function UserNavigator() {
   return (
     <BleRoot>
       <Topbar />
-      <UserStack.Navigator initialRouteName="configure-device-screen">
+      <UserStack.Navigator initialRouteName="your-recipes-screen">
         <UserStack.Group>
           <UserStack.Screen
             name="your-recipes-screen"

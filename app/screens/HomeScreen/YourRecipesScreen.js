@@ -79,7 +79,7 @@ export const YourRecipesScreen = () => {
   useEffect(() => {
     const getRecipes = async () => {
       const res = await axios.get(`/api/user/read/${user.uid}`);
-      setRecipes(res.data[0].recipes);
+      setRecipes(res.data[0].recipes.sort((a, b) => b.updatedAt > a.updatedAt));
     };
     getRecipes();
   }, [isFocused, user]);

@@ -91,4 +91,12 @@ export const spiceData = [
   { spiceId: 7, name: 'Black pepper' },
   { spiceId: 8, name: 'Coriander powder' },
   { spiceId: 9, name: 'Salt' },
+  { spiceId: 10, name: 'Chilli powder' },
+  { spiceId: 11, name: 'Nutmeg' },
+  { spiceId: 12, name: 'All spice' },
+  { spiceId: 13, name: 'Ginger powder' },
+  { spiceId: 14, name: 'Cayenne powder' },
+  { spiceId: 15, name: 'Gharam masala' },
+  { spiceId: 16, name: 'Curry powder' },
+  { spiceId: 17, name: 'Cajun' },
 ];
