@@ -7,6 +7,7 @@ import { stringToBytes } from 'convert-string';
  * @returns true indicating successfully sent data, and false when not sent
  */
 export const send = async (peripheralId, data) => {
+  console.log('sending data to BLE:', data);
   try {
     const val = await BleManager.retrieveServices(peripheralId);
 
@@ -18,10 +19,17 @@ export const send = async (peripheralId, data) => {
       'FFE1',
       stringToBytes(data),
     );
+    console.log('Successfully sent data');
 
     return true;
   } catch (err) {
     console.log(err);
     return false;
   }
+};
+
+export const recipeToDevice = (recipe) => {
+  return JSON.stringify(
+    recipe.map((ingredient) => [ingredient.spiceId, ingredient.amount]),
+  );
 };

@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   FlatList,
   Image,
-  ScrollView
+  ScrollView,
 } from 'react-native';
 import { COLORS, DIM } from '../../common';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
@@ -19,20 +19,25 @@ import axios from 'axios';
 import { useAuth } from '../../hooks/useAuth';
 import { BackButton } from '../../common/button/BackButton';
 import { AppDivider } from '../../common/divider/AppDivider';
+import { recipeToDevice, send } from '../../bluetooth/ble';
+import { bleConnectedPeripheral } from '../../bluetooth/atoms';
 
-const Item = ({ title, amount}) => (
+const Item = ({ title, amount }) => (
   <View style={styles.item}>
     <Ingredient name={title} amount={amount} />
   </View>
 );
 
 export const ViewRecipeScreen = ({ route }) => {
-    const { item, isPublic } = route.params || {};
+  const { item, isPublic } = route.params || {};
+  const [connectedPeripheral, setConnectedPeripheral] = useRecoilState(
+    bleConnectedPeripheral,
+  );
   const [ingredientsData, setIngredientsData] = useRecoilState(
     createIngredientState,
   );
-const [configDelete, setConfigDelete] = useState(false);
-const [isPublished, setIsPublished] = useState(item.published);
+  const [configDelete, setConfigDelete] = useState(false);
+  const [isPublished, setIsPublished] = useState(item.published);
   const navigator = useNavigation();
   const { user } = useAuth();
 
@@ -64,10 +69,7 @@ const [isPublished, setIsPublished] = useState(item.published);
         <FlatList
           data={ingredientsData}
           renderItem={({ item }) => (
-            <Item
-              title={item.name}
-              amount={item.amount}
-            />
+            <Item title={item.name} amount={item.amount} />
           )}
           keyExtractor={(item) => item.id}
           style={styles.list}
@@ -79,122 +81,141 @@ const [isPublished, setIsPublished] = useState(item.published);
 
   const handleShare = async () => {
     try {
-        axios.put(`/api/recipe/publish/${item._id}`)
-        setIsPublished(true);
+      axios.put(`/api/recipe/publish/${item._id}`);
+      setIsPublished(true);
     } catch (error) {
-        console.log(error)
+      console.log(error);
     }
-  }
+  };
   const handleUnshare = async () => {
     try {
-        axios.put(`/api/recipe/unpublish/${item._id}`)
-        setIsPublished(false);
+      axios.put(`/api/recipe/unpublish/${item._id}`);
+      setIsPublished(false);
     } catch (error) {
-        console.log(error)
+      console.log(error);
     }
-  }
+  };
 
   const handleSave = async () => {
     try {
-        await axios.post(`/api/recipe/create`, { 
-            ...item, 
-            uid: user.uid, 
-            username: user.displayName 
-        })
-        navigator.navigate('your-recipes-screen')
+      await axios.post(`/api/recipe/create`, {
+        ...item,
+        uid: user.uid,
+        username: user.displayName,
+      });
+      navigator.navigate('your-recipes-screen');
     } catch (error) {
-        console.log(error)
+      console.log(error);
     }
-  }
+  };
+
+  const sendRecipeToMixer = async () => {
+    let data = recipeToDevice([...ingredientsData]);
+    await send(connectedPeripheral.id, `new_recipe:${data}`);
+  };
 
   const buttons = () => (
     <View style={styles.buttonContainer}>
       <AppButton
-        label={'Download to SpiceMixer'}
+        label={
+          connectedPeripheral
+            ? 'Download to SpiceMixer'
+            : 'Connect to SpiceMixer'
+        }
         onPress={() => {
-          navigator.navigate('bluetooth-screen');
+          if (connectedPeripheral) {
+            sendRecipeToMixer();
+          } else {
+            navigator.navigate('bluetooth-screen');
+          }
         }}
       />
-      {isPublished ? 
-            <AppButton
-            label={'Unshare'}
-            invert
-            onPress={() => {handleUnshare()}}
-          />
-      : 
-            <AppButton
-            label={'Share'}
-            primary
-            onPress={() => {handleShare()}}
-          />
-      }
-
+      {isPublished ? (
+        <AppButton
+          label={'Unshare'}
+          invert
+          onPress={() => {
+            handleUnshare();
+          }}
+        />
+      ) : (
+        <AppButton
+          label={'Share'}
+          primary
+          onPress={() => {
+            handleShare();
+          }}
+        />
+      )}
     </View>
   );
   const saveButton = () => (
     <View style={styles.buttonContainer}>
-      <AppButton
-        label={'Save'}
-        primary
-        onPress={() => handleSave()}
-      />
+      <AppButton label={'Save'} primary onPress={() => handleSave()} />
     </View>
   );
 
-
   const handleDelete = async () => {
-    setConfigDelete(true)
+    setConfigDelete(true);
     try {
-        await axios.delete(`/api/recipe/delete/${item._id}`, {
-            data: {
-                uid: user.uid
-            }
-        })
-        navigator.navigate('your-recipes-screen')
+      await axios.delete(`/api/recipe/delete/${item._id}`, {
+        data: {
+          uid: user.uid,
+        },
+      });
+      navigator.navigate('your-recipes-screen');
+    } catch (error) {
+      setConfigDelete(false);
+      console.log(error);
     }
-    catch (error) {
-        setConfigDelete(false)
-        console.log(error)
-    }
-  }
+  };
 
   return (
     <ScrollView style={styles.scrollview}>
-    <View style={styles.box}>
-        <View style = {styles.topContainer}>
-        <BackButton navigator={navigator}/>
-        { !isPublic && 
-        <TouchableOpacity onPress ={() => {handleDelete()}}>
-            { configDelete ? 
-            <MaterialIcon name="delete" size={24} /> :
-            <MaterialIcon name="delete-outline" size={24} />
-            }
-        </TouchableOpacity>}
+      <View style={styles.box}>
+        <View style={styles.topContainer}>
+          <BackButton navigator={navigator} />
+          {!isPublic && (
+            <TouchableOpacity
+              onPress={() => {
+                handleDelete();
+              }}>
+              {configDelete ? (
+                <MaterialIcon name="delete" size={24} />
+              ) : (
+                <MaterialIcon name="delete-outline" size={24} />
+              )}
+            </TouchableOpacity>
+          )}
         </View>
         <Image
-            style={styles.spicePhoto}
-            source={ item.image ? {
-                uri: item.image 
-            } : { 
-                uri: 'https://www.homestratosphere.com/wp-content/uploads/2019/04/Different-types-of-spices-of-the-table-apr18-870x561.jpg.webp' 
-            }}
+          style={styles.spicePhoto}
+          source={
+            item.image
+              ? {
+                  uri: item.image,
+                }
+              : {
+                  uri: 'https://www.homestratosphere.com/wp-content/uploads/2019/04/Different-types-of-spices-of-the-table-apr18-870x561.jpg.webp',
+                }
+          }
         />
-        <View style = {styles.textContainer}>
-        <Text style={styles.hello}>{item.title}</Text>
+        <View style={styles.textContainer}>
+          <Text style={styles.hello}>{item.title}</Text>
+        </View>
+        <Text style={styles.description}>{item.description}</Text>
+        <Text style={{ color: 'grey' }}>Spices</Text>
+        <AppDivider />
+        {ingredients()}
+        {isPublic ? saveButton() : buttons()}
       </View>
-      <Text style={styles.description}>{item.description}</Text>
-      <Text style={{ color: 'grey'}}>Spices</Text>
-      <AppDivider/>
-      {ingredients()}
-      { isPublic ? saveButton() : buttons()}
-    </View>
     </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
-  scrollview:{
-    marginVertical: 16
+  scrollview: {
+    marginVertical: 16,
   },
   box: {
     marginTop: 16,
@@ -205,7 +226,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginTop: 15,
-    marginBottom: 10
+    marginBottom: 10,
   },
   inputContainer: {
     // flex: 2,
@@ -250,6 +271,6 @@ const styles = StyleSheet.create({
   textContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 15
+    marginTop: 15,
   },
 });
