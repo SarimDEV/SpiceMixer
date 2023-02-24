@@ -1,7 +1,13 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 
-import { Text, View, StyleSheet } from 'react-native';
+import {
+  Text,
+  View,
+  StyleSheet,
+  KeyboardAvoidingView,
+  ScrollView,
+} from 'react-native';
 
 import { COLORS, DIM } from '../../common';
 import { AppButton } from '../../common/button/AppButton';
@@ -77,73 +83,90 @@ export const SignupScreen = () => {
   };
 
   return (
-    <View style={styles.box}>
-      <View style={styles.logoContainer}>
-        <Logo />
+    <KeyboardAvoidingView style={styles.kac} behavior={'padding'}>
+      <View style={styles.box}>
+        <View style={styles.logoContainer}>
+          <Logo />
+        </View>
+        <View style={styles.inputContainer}>
+          <AppInput
+            icon="mail-outline"
+            placeholder="example@example.com"
+            autoFocus={true}
+            text={email}
+            onChangeText={setEmail}
+            autoCapitalize={'none'}
+            autoComplete={'off'}
+          />
+          <Spacer />
+          <AppInput
+            icon="person-outline"
+            placeholder="John Doe"
+            autoFocus={false}
+            text={name}
+            onChangeText={setName}
+            autoCapitalize={'none'}
+            autoComplete={'off'}
+          />
+          <Spacer />
+          <AppInput
+            icon="lock-outline"
+            placeholder="Password"
+            autoFocus={false}
+            text={password}
+            onChangeText={setPassword}
+            autoCapitalize={'none'}
+            autoComplete={'off'}
+            secureTextEntry={true}
+          />
+          {error ? <Text style={styles.errorText}>{error}</Text> : undefined}
+        </View>
+        <View style={styles.btnContainer}>
+          <AppButton
+            label={'Back to Login'}
+            onPress={() => navigator.navigate('login-screen')}
+          />
+          <Spacer />
+          <AppButton
+            loading={signingUp}
+            label={'Sign Up'}
+            primary
+            onPress={() => {
+              setSigningUp(true);
+              handleSignUp(email, password, name, successCallback, signUpError);
+            }}
+          />
+        </View>
       </View>
-      <View style={styles.inputContainer}>
-        <AppInput
-          icon="mail-outline"
-          placeholder="example@example.com"
-          autoFocus={true}
-          text={email}
-          onChangeText={setEmail}
-          autoCapitalize={'none'}
-          autoComplete={'off'}
-        />
-        <Spacer />
-        <AppInput
-          icon="person-outline"
-          placeholder="John Doe"
-          autoFocus={false}
-          text={name}
-          onChangeText={setName}
-          autoCapitalize={'none'}
-          autoComplete={'off'}
-        />
-        <Spacer />
-        <AppInput
-          icon="lock-outline"
-          placeholder="Password"
-          autoFocus={false}
-          text={password}
-          onChangeText={setPassword}
-          autoCapitalize={'none'}
-          autoComplete={'off'}
-          secureTextEntry={true}
-        />
-        {error ? <Text style={styles.errorText}>{error}</Text> : undefined}
-      </View>
-      <AppButton
-        label={'Back to Login'}
-        onPress={() => navigator.navigate('login-screen')}
-      />
-      <Spacer />
-      <AppButton
-        loading={signingUp}
-        label={'Sign Up'}
-        primary
-        onPress={() => {
-          setSigningUp(true);
-          handleSignUp(email, password, name, successCallback, signUpError);
-        }}
-      />
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
+  kac: {
+    flex: 1,
+  },
   box: {
     marginHorizontal: 3 * DIM.appMargin,
     flex: 1,
     justifyContent: 'center',
   },
+  btnContainer: {
+    flex: 1.5,
+    justifyContent: 'center',
+    marginBottom: 16,
+    // backgroundColor: 'blue',
+  },
   inputContainer: {
-    marginBottom: 52,
+    flex: 1,
+    justifyContent: 'center',
+    // backgroundColor: 'red',
   },
   logoContainer: {
     alignItems: 'center',
-    marginBottom: 104,
+    flex: 1,
+    justifyContent: 'center',
+    // backgroundColor: 'orange',
   },
   spacer: {
     marginVertical: 8,

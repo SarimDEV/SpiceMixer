@@ -30,6 +30,9 @@ export const send = async (peripheralId, data) => {
 
 export const recipeToDevice = (recipe) => {
   return JSON.stringify(
-    recipe.map((ingredient) => [ingredient.spiceId, ingredient.amount]),
+    recipe
+      .map((ingredient) => [ingredient.spiceId, ingredient.amount])
+      .flat()
+      .join(''),
   );
 };

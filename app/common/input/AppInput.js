@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
     paddingTop: multiline ? 10 : undefined,
     alignItems: multiline ? 'baseline' : 'center',
     borderRadius: 18,
-    borderWidth: 0.2,
-    borderColor: 'grey',
+    borderWidth: 1,
+    borderColor: '#D3D3D3',
   }),
 });
