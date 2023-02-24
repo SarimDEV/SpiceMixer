@@ -137,6 +137,9 @@ export const BluetoothScreen = () => {
         title: 'Connected!',
         description: 'You are good to go!',
         buttonTitle: 'Download spice blends',
+        secondaryButtonTitle: 'Configure SpiceMixer',
+        secondaryButtonFnc: () => navigator.navigate('configure-device-screen'),
+        buttonFnc: () => navigator.navigate('your-recipes-screen'),
         middleComponent: () => (
           <BluetoothDevice name={connectedPeripheral.name} />
         ),
@@ -197,9 +200,16 @@ export const BluetoothScreen = () => {
         {headerTitleAndDescription().middleComponent()}
       </View>
       <View style={styles.buttonBox}>
+        {headerTitleAndDescription().secondaryButtonTitle && (
+          <BluetoothButton
+            title={headerTitleAndDescription().secondaryButtonTitle}
+            onPress={() => headerTitleAndDescription().secondaryButtonFnc()}
+          />
+        )}
         <BluetoothButton
           title={headerTitleAndDescription().buttonTitle}
           onPress={() => headerTitleAndDescription().buttonFnc()}
+          primary={true}
         />
       </View>
     </View>

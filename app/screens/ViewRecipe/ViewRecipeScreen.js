@@ -111,7 +111,7 @@ export const ViewRecipeScreen = ({ route }) => {
 
   const sendRecipeToMixer = async () => {
     let data = recipeToDevice([...ingredientsData]);
-    await send(connectedPeripheral.id, `!N:${data}\n`);
+    await send(connectedPeripheral.id, `!N:${data}?`);
   };
 
   const buttons = () => (

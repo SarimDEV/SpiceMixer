@@ -5,8 +5,8 @@ import { BackButton } from '../../common/button/BackButton';
 import { AppDivider } from '../../common/divider/AppDivider';
 import { AppButton } from '../../common/button/AppButton';
 
-export const BluetoothButton = ({ title, onPress }) => {
-  return <AppButton label={title} onPress={onPress} primary />;
+export const BluetoothButton = ({ title, onPress, primary }) => {
+  return <AppButton label={title} onPress={onPress} primary={primary} />;
 };
 
 const styles = StyleSheet.create({

@@ -10,7 +10,7 @@ import {
   Button,
   FlatList,
   TouchableHighlight,
-  TouchableOpacity
+  TouchableOpacity,
 } from 'react-native';
 import { AppDivider } from '../../common/divider/AppDivider';
 import { BackButton } from '../../common/button/BackButton';
@@ -26,27 +26,33 @@ import { BluetoothButton } from '../../components/bluetooth/BluetoothButton';
 import { BluetoothPeripheralList } from '../../components/bluetooth/BluetoothPeripheralList';
 import { useRecoilValue } from 'recoil';
 import { configureSpices } from './recoil/atom';
-const BleManagerModule = NativeModules.BleManager;
-const bleManagerEmitter = new NativeEventEmitter(BleManagerModule);
+import { configureSpicesToDevice, send } from '../../bluetooth/ble';
+import { bleConnectedPeripheral } from '../../bluetooth/atoms';
 
 export const ConfigureDeviceScreen = () => {
-    const navigator = useNavigation();
-    const list = useRecoilValue(configureSpices)
-
+  const navigator = useNavigation();
+  const list = useRecoilValue(configureSpices);
+  const connectedPeripheral = useRecoilValue(bleConnectedPeripheral);
 
   const Item = ({ name, id, onPress }) => (
     <TouchableOpacity style={styles.item} onPress={onPress}>
       <View>
-      <Text style={styles.title(name)}>{name ? name : "Select Spice..."}</Text>
-      <Text>Container {id}</Text>
+        <Text style={styles.title(name)}>
+          {name ? name : 'Select Spice...'}
+        </Text>
+        <Text>Container {id}</Text>
       </View>
       <MaterialIcon name="chevron-right" size={16} />
     </TouchableOpacity>
   );
 
+  const sendConfigurationToMixer = async () => {
+    let data = configureSpicesToDevice(list);
+    await send(connectedPeripheral.id, `!C:${data}?`);
+  };
+
   return (
     <View style={styles.box}>
-        <BackButton navigator={navigator} />
       <View style={styles.headerBox}>
         <BluetoothHeader
           navigator={navigator}
@@ -55,17 +61,25 @@ export const ConfigureDeviceScreen = () => {
         />
       </View>
       <View style={styles.centerBox}>
-      <FlatList
-        data={list}
-        renderItem={({ item, index }) => <Item name={item.name} id={index + 1} onPress={() => {navigator.navigate("configure-container-screen", { index })}}/>}
-        keyExtractor={(item) => item.id}
-        style={styles.list}
-      />
+        <FlatList
+          data={list}
+          renderItem={({ item, index }) => (
+            <Item
+              name={item.name}
+              id={index + 1}
+              onPress={() => {
+                navigator.navigate('configure-container-screen', { index });
+              }}
+            />
+          )}
+          keyExtractor={(item) => item.id}
+          style={styles.list}
+        />
       </View>
       <View style={styles.buttonBox}>
         <BluetoothButton
           title="Configure Spice Mixer"
-          onPress={() => console.log("hey")}
+          onPress={() => sendConfigurationToMixer()}
         />
       </View>
     </View>
@@ -125,9 +139,9 @@ const styles = StyleSheet.create({
     paddingRight: 12,
     textAlign: 'right',
   },
-//   box: {
-//     flex: 1,
-//   },
+  //   box: {
+  //     flex: 1,
+  //   },
   description: {
     marginBottom: 8,
     flexDirection: 'row',
@@ -152,11 +166,11 @@ const styles = StyleSheet.create({
     borderBottomColor: COLORS.primary,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   title: (name) => ({
     fontSize: 16,
     fontWeight: '500',
-    color: name ? 'black' : 'grey'
+    color: name ? 'black' : 'grey',
   }),
 });
