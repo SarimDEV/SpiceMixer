@@ -80,10 +80,9 @@ void setup() {
   Serial.begin(9600);
   Serial.println("HM10 serial started at 9600");
   HM10.begin(9600); // set HM10 serial at 9600 baud rate
-  pinMode(13, OUTPUT); // onboard LED
-  digitalWrite(13, LOW); // switch OFF LED
+  // pinMode(13, OUTPUT); // onboard LED
+  // digitalWrite(13, LOW); // switch OFF LED
 }
-
 
 void loop() {
   HM10.listen();  // listen the HM10 port
@@ -109,7 +108,7 @@ void loop() {
 
   if (dataType == "C") {
     Serial.println("configuring machine...");
-    digitalWrite(13, HIGH); // switch ON LED
+    // digitalWrite(13, HIGH); // switch ON LED
 
     numContainers = configurationParser(data, configArr);
     Serial.println(numContainers);
@@ -127,7 +126,7 @@ void loop() {
 
   if (dataType == "N") {
     Serial.println("parsing recipe data...");
-    digitalWrite(13, HIGH); // switch ON LED
+    // digitalWrite(13, HIGH); // switch ON LED
 
     int arr[12][2];
     int amount = recipeParser(data, arr);
