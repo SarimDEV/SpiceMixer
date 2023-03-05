@@ -26,7 +26,6 @@
 #define MINPRESSURE 10
 #define MAXPRESSURE 1000
 
-
 #define BACKGROUND 0xF7BE
 #define GRAY 0xCE79
 #define DARKGRAY 0x8430
@@ -57,9 +56,11 @@ bool homeScreen_visible = false;
 int recipe_index = 0;
 
 const int AMOUNT_RECIPES = 5;
+const int AMOUNT_SPICES_PER_RECIPE = 5;
 int num_recipes = 0;
 
 String recipeNames[AMOUNT_RECIPES] = { "" };
+int recipeInformation[AMOUNT_RECIPES][AMOUNT_SPICES_PER_RECIPE][2]; 
 
 const char string_0[] PROGMEM = "Garlic powder";
 const char string_1[] PROGMEM = "Cinnamon";
@@ -102,18 +103,6 @@ const char *const ingredientTable[] PROGMEM = {
 };
 
 char buffer[30];
-
-struct ingredient{
-  String name;
-  String amount;
-};
-
-//  ingredient recipes[5]= {{"Salt", "2 tbsp"},
-//                           {"Paprika", "3 tbsp"},
-//                           {"Black Pepper", "1 tbsp"},
-//                           {"Garlic Powder", "2 tbsp"},
-//                           {"Onion Powder", "1 tbsp"}
-//                           };
 
 //switch width and height bc the screen gets rotated
 int recipeBlock_xmin = 40;
@@ -183,33 +172,24 @@ void loop() {
     String spiceName = getValue(data, ';', 1);
     Serial.println(spiceName);
 
-    int arr[12][2];
-    int amount = recipeParser(ingredients, arr);
-    Serial.println(amount);
+    int index = 0;
+    if (num_recipes == 4) {
+      recipeParser(ingredients, recipeInformation[0]);
+      recipeNames[0] = spiceName;
+    } else {
+      recipeParser(ingredients, recipeInformation[num_recipes]);
+      recipeNames[num_recipes] = spiceName;
+      index = num_recipes;
+      num_recipes += 1;
+    }
 
     dataType = "";
     data = "";
 
     Serial.println("successfully saved recipe!");
     successBleScreen();
-    
-    int index = 0;
-    while (index < AMOUNT_RECIPES) {
-      if (recipeNames[index] == "") {
-        recipeNames[index] = spiceName;
-        index = 5;
-      }
-      index += 1; 
-    }
-    Serial.println("OUT OF THE WHILE LOOP");
 
-    if (index == 4) {
-      recipeNames[0] = spiceName;
-    }
-
-    num_recipes += 1;
-
-    recipeScreen(arr, spiceName, amount);
+    recipeScreen(recipeInformation[index], recipeNames[index]);
   }
 
  // Retrieve a point  
@@ -224,26 +204,20 @@ void loop() {
   p.x = map(p.x, TS_MINX, TS_MAXX, 0, tft.height());
   p.y = map(p.y, TS_MINY, TS_MAXY,  tft.width(),0);
 
-  Serial.println(p.x);
-  Serial.println(p.y);
-
-  //  Serial.print("\n");
-   /*Serial.print(p.x);
-     Serial.print(" . ");
-   Serial.print(p.y);*/
+  // Serial.println(p.x);
+  // Serial.println(p.y);
 
   if (homeScreen_visible){
 
     //click recipe block
-    // if (p.x>recipeBlock_ymin && p.x<recipeBlock_height +recipeBlock_ymin
-    //    && p.y>recipeBlock_xmin && p.y<recipeBlock_width +recipeBlock_xmin)
-    //     {
-    //       recipeScreen();
-    //       homeScreen_visible = false;
-    //     }
+    if (p.x>recipeBlock_ymin && p.x<recipeBlock_height +recipeBlock_ymin
+       && p.y>recipeBlock_xmin && p.y<recipeBlock_width +recipeBlock_xmin)
+        {
+          recipeScreen(recipeInformation[recipe_index], recipeNames[recipe_index]);
+          homeScreen_visible = false;
+        }
 
       //next and prev buttons
-      Serial.println("WRONG IF STATEMENT BLOCK");
 
       if(p.x>prev_dims[1]&& p.x<prev_dims[3]+prev_dims[1] && p.y>prev_dims[0] && p.y<prev_dims[2]+prev_dims[0])
       {
@@ -268,7 +242,6 @@ void loop() {
       }
   }else{//recipe screen visible
       //back btn
-      Serial.println("GOING INSIDE ELSE STATEMENT");
 
     if(p.x>backBtn_dims[1]&& p.x<backBtn_dims[3] && p.y>backBtn_dims[0] && p.y<backBtn_dims[2])
         {
@@ -332,8 +305,8 @@ void prevBtn(){
   tft.println("<");
 
 }
-
-void recipeScreen(int recipes[][2], String name, int numSpices){
+// int numSpices
+void recipeScreen(int recipes[][2], String name){
   homeScreen_visible = false;
   String recipeTitle = "< " + name;
   tft.fillScreen(BACKGROUND);
@@ -354,10 +327,12 @@ void recipeScreen(int recipes[][2], String name, int numSpices){
   tft.println("Amount");
   tft.setTextColor(DARKGRAY);
 
-  for (int i = 0; i < numSpices; i++){
+  for (int i = 0; i < AMOUNT_SPICES_PER_RECIPE; i++){
     int index = recipes[i][0] - 1;
     strcpy_P(buffer, (char *)pgm_read_word(&(ingredientTable[index])));
-    ingredientBlock(buffer, String(recipes[i][1]), i);
+    if (recipes[i][1] != 0) {
+      ingredientBlock(buffer, String(recipes[i][1]), i);
+    }
   }
 
 }
