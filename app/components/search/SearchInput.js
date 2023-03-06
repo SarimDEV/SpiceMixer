@@ -10,7 +10,7 @@ import {
 import { COLORS } from '../../common';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 
-export const SearchInput = ({text, onChangeText}) => {
+export const SearchInput = ({ text, onChangeText, autoFocus = true }) => {
   // const [text, onChangeText] = useState('');
 
   return (
@@ -21,7 +21,7 @@ export const SearchInput = ({text, onChangeText}) => {
         value={text}
         onChangeText={onChangeText}
         placeholder={'Search a recipe ...'}
-        autoFocus={true}
+        autoFocus={autoFocus}
       />
     </View>
   );

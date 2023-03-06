@@ -43,7 +43,6 @@ export const AddIngredientScreen = () => {
         <BackButton navigator={navigator} />
         <Text style={styles.descriptionFont}>Search and select a spice</Text>
       </View>
-      <IngredientInput />
       <FlatList
         data={spiceData.filter(
           (data) =>
