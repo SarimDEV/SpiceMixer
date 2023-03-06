@@ -49,9 +49,10 @@ export const BluetoothScreen = () => {
   };
 
   const stopScan = () => {
-    if (isScanning) {
-      BleManager.stopScan();
-    }
+    navigator.navigate('your-recipes-screen');
+    // if (isScanning) {
+    //   BleManager.stopScan();
+    // }
   };
 
   const connectToPeripheral = async (peripheralId, peripheralName) => {
