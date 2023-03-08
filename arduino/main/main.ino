@@ -7,6 +7,8 @@
 #include <Fonts/FreeSans12pt7b.h>
 #include <SoftwareSerial.h>
 #include <avr/pgmspace.h>
+#include <EEPROM.h>
+#include "EEPROMAnything.h"
 
 // For the Adafruit shield, these are the default.
 #define TFT_DC 9
@@ -34,17 +36,6 @@
 #define CYAN 0x5D14
 #define WHITE 0xFFFF
 
-SoftwareSerial HM10(2, 3); // RX = 0, TX = 1
-char appData;
-String inData = "";
-
-String rawData = "";
-String dataType = "";
-String data = "";
-
-int configArr[12];
-int numContainers = 0;
-
 // Use hardware SPI (on Uno, #13, #12, #11) and the above for CS/DC
 Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC);
 // If using the breakout, change pins as desired
@@ -52,11 +43,26 @@ Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC);
 
 TouchScreen ts = TouchScreen(XP, YP, XM, YM, 300);
 
+SoftwareSerial HM10(2, 3); // RX = 0, TX = 1
+
+char appData;
+String inData = "";
+
+String rawData = "";
+String dataType = "";
+String data = "";
+
+const int NUM_CONTAINERS = 12;
+int configArr[NUM_CONTAINERS] = { 0 };
+int numContainers = 0;
+
+int screenState = 0;
 bool homeScreen_visible = false;
 int recipe_index = 0;
 
 const int AMOUNT_RECIPES = 5;
-const int AMOUNT_SPICES_PER_RECIPE = 5;
+const int AMOUNT_SPICES_PER_RECIPE = 6;
+const int STRING_LENGTH_TO_STORE = 15;
 int num_recipes = 0;
 
 String recipeNames[AMOUNT_RECIPES] = { "" };
@@ -114,18 +120,63 @@ int backBtn_dims[] ={0, 40, tft.height()/2+30, 80};
 int dispenseBtn_dims[] = {tft.height()/2+20, 45, 130, 40};
 int prev_dims[] = {0, 70, 30, tft.height()-100};
 int next_dims[] = {tft.height()-30, 70, 30, tft.width()-100};
+int settings_dims[] = {240, 0, 330-240, 40};
+
+const int CONFIG_ARR_ADDRESS = 0; 
+const int RECIPE_INFO_ADDRESS = 100;
+const int RECIPE_NAMES_ADDRESS = 800;
 
 void setup() {
   Serial.begin(9600);
-  // Serial.begin(9600);
   Serial.println("HM10 serial started at 9600");
   HM10.begin(9600); // set HM10 serial at 9600 baud rate
   tft.begin();
   tft.setRotation(3);
-  welcomeScreen();
-  // homeScreen();
-  // Serial.print(tft.width());
-  // Serial.print(tft.height());
+
+  // initialize our 3d array as 0s
+  for (int i = 0; i < AMOUNT_RECIPES; i++){
+    for (int j = 0; j < AMOUNT_SPICES_PER_RECIPE; j++) {
+      recipeInformation[i][j][0] = 0;
+      recipeInformation[i][j][1] = 0;
+    }
+  }
+
+  successBleScreen("Hello! :)", 1000);
+
+
+  for (int i = 0; i < 1024; i++) { // use this for loop to reset EEPROM memory
+    EEPROM[i] = 255;
+  }
+
+  EEPROM_readAnything(CONFIG_ARR_ADDRESS, configArr); // int arr takes up 24 bytes, starting at CONFIG_ARR_ADDRESS
+
+  for (int i = 0; i < NUM_CONTAINERS; i++) {
+    if (configArr[i] != 0 && configArr[i] != -1 && configArr[i] != 255){
+      numContainers++;
+    } 
+  }
+
+  EEPROM_readAnything(RECIPE_INFO_ADDRESS, recipeInformation); // 3d int array takes up 100 bytes, starting at RECIPE_INFO_ADDRESS
+  loadRecipeNamesFromEEPROM(); // string array, starting at RECIPE_NAMES_ADDRESS, takes up 50 bytes
+
+  for (int i = 0; i < AMOUNT_RECIPES; i++){
+    if (recipeInformation[i][0][1] != 0 && recipeInformation[i][0][1] != -1) {
+      Serial.println(recipeInformation[i][0][1]);
+      num_recipes++;
+    }
+  }
+
+  Serial.println("num recipes");
+  Serial.println(num_recipes);
+
+
+  if (num_recipes <= 0 ) {
+    screenState = 3;
+    welcomeScreen();
+  } else {
+    homeScreen();
+  }
+
 }
 
 void loop() {
@@ -160,8 +211,13 @@ void loop() {
     dataType = "";
     data = "";
 
-    Serial.println("successfully configured machine!");
+    EEPROM_writeAnything(CONFIG_ARR_ADDRESS , configArr);
 
+    Serial.println("successfully configured machine!");
+    successBleScreen("Saved device information!", 3000);
+
+    configurationScreen();
+    screenState = 2;
   }
 
   if (dataType == "N") {
@@ -173,91 +229,122 @@ void loop() {
     Serial.println(spiceName);
 
     int index = 0;
-    if (num_recipes == 4) {
+    if (num_recipes == AMOUNT_RECIPES) {
       recipeParser(ingredients, recipeInformation[0]);
       recipeNames[0] = spiceName;
     } else {
-      recipeParser(ingredients, recipeInformation[num_recipes]);
-      recipeNames[num_recipes] = spiceName;
-      index = num_recipes;
-      num_recipes += 1;
+      bool boolean = true;
+      while (index < AMOUNT_RECIPES && boolean == true) {
+        if (recipeNames[index] == "") {
+          recipeParser(ingredients, recipeInformation[index]);
+          recipeNames[index] = spiceName;
+          num_recipes++;
+          boolean = false; // using this to break out of the loop instead of using break
+        }
+        else {
+          index++;
+        }
+      }
     }
+    
+    EEPROM_writeAnything(RECIPE_INFO_ADDRESS, recipeInformation);
+    writeRecipeNameToEEPROM(index, spiceName);
+    // loadRecipeNamesFromEEPROM();
+
+    // Serial.println("look at recipe names..");
+    // for (int i = 0; i < 5; i++) {
+    //   Serial.println(recipeNames[i]);
+    // }
+    // Serial.println("done");
 
     dataType = "";
     data = "";
 
     Serial.println("successfully saved recipe!");
-    successBleScreen();
+    successBleScreen("Saved recipe information!", 3000);
 
     recipeScreen(recipeInformation[index], recipeNames[index]);
+    screenState = 1;
   }
 
- // Retrieve a point  
+  // Retrieve a point  
   TSPoint p = ts.getPoint();
-   // we have some minimum pressure we consider 'valid'
+  // we have some minimum pressure we consider 'valid'
   // pressure of 0 means no pressing!
   if (p.z < MINPRESSURE || p.z > MAXPRESSURE) {
      return;
   }
-    // Scale from ~0->1000 to tft.width using the calibration #'s
- 
+  // Scale from ~0->1000 to tft.width using the calibration #'s
   p.x = map(p.x, TS_MINX, TS_MAXX, 0, tft.height());
   p.y = map(p.y, TS_MINY, TS_MAXY,  tft.width(),0);
 
+  // Serial.println("X AND Y");
   // Serial.println(p.x);
   // Serial.println(p.y);
 
-  if (homeScreen_visible){
+  navigation(p.x, p.y);
+}
 
-    //click recipe block
-    if (p.x>recipeBlock_ymin && p.x<recipeBlock_height +recipeBlock_ymin
-       && p.y>recipeBlock_xmin && p.y<recipeBlock_width +recipeBlock_xmin)
-        {
+void navigation(int px, int py) {
+
+  if (screenState == 0){ // homescreen visible
+    if (px>recipeBlock_ymin && px<recipeBlock_height +recipeBlock_ymin && py>recipeBlock_xmin && py<recipeBlock_width +recipeBlock_xmin) {
           recipeScreen(recipeInformation[recipe_index], recipeNames[recipe_index]);
-          homeScreen_visible = false;
-        }
-
-      //next and prev buttons
-
-      if(p.x>prev_dims[1]&& p.x<prev_dims[3]+prev_dims[1] && p.y>prev_dims[0] && p.y<prev_dims[2]+prev_dims[0])
-      {
-          if (recipe_index <= 0){
-            recipe_index = num_recipes - 1;// manually edit
-            }else{
-              recipe_index--;
-            }
-            // Serial.print(recipe_index);
-          drawRecipeBlock(recipeNames[recipe_index]);
-      }
-       if(p.x>next_dims[1]&& p.x<next_dims[3]+next_dims[1] && p.y>next_dims[0] && p.y<next_dims[2]+next_dims[0])
-      {
-        
-          if(recipe_index >= num_recipes - 1){// edit array length
-            recipe_index =0;
-          }else{
-            recipe_index++;
-          }
-          // Serial.print(recipe_index);
-          drawRecipeBlock(recipeNames[recipe_index]);
-      }
-  }else{//recipe screen visible
-      //back btn
-
-    if(p.x>backBtn_dims[1]&& p.x<backBtn_dims[3] && p.y>backBtn_dims[0] && p.y<backBtn_dims[2])
-        {
-          Serial.println("GOING BACK TO HOME SCREEN");
-          homeScreen();
-          homeScreen_visible = true;
-        }
-    //dispense btn
-    if (p.x>dispenseBtn_dims[1]&& p.x<dispenseBtn_dims[3]+dispenseBtn_dims[1] && p.y>dispenseBtn_dims[0] && p.y<dispenseBtn_dims[2]+dispenseBtn_dims[0])
-    {
-      dispensingBtn();
+          screenState  = 1;
     }
-
+    else if(px>prev_dims[1]&& px<prev_dims[3]+prev_dims[1] && py>prev_dims[0] && py<prev_dims[2]+prev_dims[0]) {
+      if (recipe_index <= 0) {
+        recipe_index = num_recipes - 1;
+      } else {
+        recipe_index--;
+      }
+      drawRecipeBlock(recipeNames[recipe_index]);
+    }
+    else if(px>next_dims[1]&& px<next_dims[3]+next_dims[1] && py>next_dims[0] && py<next_dims[2]+next_dims[0]) { 
+      if(recipe_index >= num_recipes - 1) {
+        recipe_index =0;
+      } else {
+        recipe_index++;
+      }
+      drawRecipeBlock(recipeNames[recipe_index]);
+    }
+    else if (px>settings_dims[1]&& px<settings_dims[3]+settings_dims[1] && py>settings_dims[0] && py<settings_dims[2]+settings_dims[0]) {
+      configurationScreen();
+      screenState  = 2;
+    }
   }
-
-  
+  else if (screenState == 1){ // recipe screen visible
+    if(px>backBtn_dims[1]&& px<backBtn_dims[3] && py>backBtn_dims[0] && py<backBtn_dims[2]) {
+      homeScreen();
+      screenState  = 0;
+    }
+    //dispense btn
+    else if (px>dispenseBtn_dims[1]&& px<dispenseBtn_dims[3]+dispenseBtn_dims[1] && py>dispenseBtn_dims[0] && py<dispenseBtn_dims[2]+dispenseBtn_dims[0]) {
+      dispensingBtn();
+      screenState = 7;
+    }
+    else if (px>settings_dims[1]&& px<settings_dims[3]+settings_dims[1] && py>settings_dims[0] && py<settings_dims[2]+settings_dims[0]) {
+      configurationScreen();
+      screenState  = 2;
+    }
+  }
+  else if (screenState == 2) { // configuration screen visible
+    if(px>backBtn_dims[1]&& px<backBtn_dims[3] && py>backBtn_dims[0] && py<backBtn_dims[2]) {
+      if (num_recipes <= 0 ) {
+        screenState = 3;
+        welcomeScreen();
+      } else {
+        homeScreen();
+        screenState  = 0;
+      }
+    }
+  }
+  else if (screenState == 3) { // welcome screen visible
+    if (px>settings_dims[1]&& px<settings_dims[3]+settings_dims[1] && py>settings_dims[0] && py<settings_dims[2]+settings_dims[0]) {
+      configurationScreen();
+      screenState  = 2;
+    }
+  }
 }
 
 void drawBanner(){
@@ -266,7 +353,14 @@ void drawBanner(){
   tft.setCursor(10, 25);
   tft.setTextColor(BLACK);
   tft.println("SpiceMixer");
+  settingsButton();
                                                                                                              
+}
+
+void settingsButton() {
+  tft.fillRect(240, 0, tft.width()-240, 40, GRAY);
+  tft.setCursor(240, 25);
+  tft.println("Settings");
 }
 
 void homeScreen(){
@@ -307,14 +401,14 @@ void prevBtn(){
 }
 // int numSpices
 void recipeScreen(int recipes[][2], String name){
-  homeScreen_visible = false;
+  // homeScreen_visible = false;
   String recipeTitle = "< " + name;
   tft.fillScreen(BACKGROUND);
   drawBanner();
   tft.setFont(&FreeSans12pt7b);
   tft.setCursor(10, 70);
   tft.setTextColor(DARKGRAY);
-  tft.println(recipeTitle); // replace with real recipe 
+  tft.println(recipeTitle);
 
   dispenseBtn();
 
@@ -328,13 +422,12 @@ void recipeScreen(int recipes[][2], String name){
   tft.setTextColor(DARKGRAY);
 
   for (int i = 0; i < AMOUNT_SPICES_PER_RECIPE; i++){
-    int index = recipes[i][0] - 1;
-    strcpy_P(buffer, (char *)pgm_read_word(&(ingredientTable[index])));
     if (recipes[i][1] != 0) {
+      int index = recipes[i][0] - 1;
+      strcpy_P(buffer, (char *)pgm_read_word(&(ingredientTable[index])));
       ingredientBlock(buffer, String(recipes[i][1]), i);
     }
   }
-
 }
 
 void dispenseBtn(){
@@ -357,14 +450,15 @@ void dispensingBtn(){
   tft.println("5%");// update progress
 }
 
-void successBleScreen(){
+void successBleScreen(String input, int ms){
   //tft.fillRect(dispenseBtn_dims[0],dispenseBtn_dims[1],dispenseBtn_dims[2],dispenseBtn_dims[3],GRAY);
   tft.fillScreen(BACKGROUND);
+  tft.setFont(&FreeSans9pt7b);
   tft.setCursor(35, tft.height()/2);
   tft.setTextColor(DARKGRAY);
-  tft.println("Saved recipe information!");
-  delay(3000);
-  homeScreen();
+  tft.println(input);
+  delay(ms);
+  // homeScreen();
 }
 
 void welcomeScreen(){
@@ -377,8 +471,49 @@ void welcomeScreen(){
   tft.println("Download recipes using Bluetooth!");
   if (num_recipes >= 0) {
       delay(3000);
-      homeScreen_visible = true;
   }
+}
+
+void configurationScreen() {
+  tft.fillScreen(BACKGROUND);
+  drawBanner();
+  tft.setFont(&FreeSans12pt7b);
+  tft.setCursor(10, 70);
+  tft.setTextColor(DARKGRAY);
+  tft.println("< Configuration");
+  tft.setFont(&FreeSans9pt7b);
+
+  if (numContainers > 0) {
+    tft.setCursor(30, 100);
+    tft.setTextColor(BLACK);
+    tft.println("Container #");
+
+    tft.setCursor(tft.width()/2, 100);
+    tft.println("Spice");
+    tft.setTextColor(DARKGRAY);
+
+    for (int i = 0; i < NUM_CONTAINERS; i++){
+      if (configArr[i] != 0 && configArr[i] != -1 && configArr[i] != 255) {
+        int index = configArr[i] - 1;
+        strcpy_P(buffer, (char *)pgm_read_word(&(ingredientTable[index])));
+        containerBlock(buffer, i);
+      }
+    }
+  } else {
+    tft.setCursor(35, tft.height()/2);
+    tft.setTextColor(DARKGRAY);
+    tft.println("Configure the device using bluetooth!");
+  }
+}
+
+void containerBlock(String spiceName, int i){ //inputs: name and amount
+  String containerNum = String(i + 1);
+  int height = tft.height()/2+2+i*20;
+  tft.setCursor(30, height);
+  tft.println("Container " + containerNum);
+
+  tft.setCursor(tft.width()/2, height);
+  tft.println(spiceName);
 }
 
 void ingredientBlock(String name, String amount, int i){ //inputs: name and amount
@@ -429,6 +564,18 @@ int recipeParser(String data, int arr[][2]) {
     }
   }
 
+  // reset the rest of the array as 0s
+  for (int i = index; i < AMOUNT_SPICES_PER_RECIPE; i++) {
+    arr[i][0] = 0;
+    arr[i][1] = 0;
+  }
+
+  // for (int i = 0; i < AMOUNT_SPICES_PER_RECIPE; i++) {
+  //   Serial.println(arr[i][0]);
+  //   Serial.println(arr[i][1]);
+  //   Serial.println();
+  // }
+
   return index;
 }
 
@@ -452,5 +599,54 @@ int configurationParser(String data, int arr[]) {
     index += 1;
   }
 
+  // reset the rest of the array as 0s
+  for (int i = index; i < NUM_CONTAINERS; i++) {
+    arr[i] = 0;
+  }
+
   return index;
+}
+
+void writeStringToEEPROM(int addrOffset, String &strToWrite) {
+  byte len = 0;
+  if (strToWrite.length() > STRING_LENGTH_TO_STORE) {
+    len = STRING_LENGTH_TO_STORE;
+  } else {
+    len = strToWrite.length();
+  }
+  EEPROM.write(addrOffset, len);
+  for (int i = 0; i < len; i++) {
+    EEPROM.write(addrOffset + 1 + i, strToWrite[i]);
+  }
+}
+
+String readStringFromEEPROM(int addrOffset) {
+  int newStrLen = EEPROM.read(addrOffset);
+  char data[newStrLen + 1];
+  for (int i = 0; i < newStrLen; i++) {
+    data[i] = EEPROM.read(addrOffset + 1 + i);
+  }
+  data[newStrLen] = '\0'; // !!! NOTE !!! Remove the space between the slash "/" and "0" (I've added a space because otherwise there is a display bug)
+  String buffer = String(data);
+  Serial.println("BUFFER");
+  Serial.println(buffer);
+  return buffer;
+}
+
+void loadRecipeNamesFromEEPROM() {
+  for (int i = 0; i < AMOUNT_RECIPES; i++) {
+    int address = RECIPE_NAMES_ADDRESS+i*(STRING_LENGTH_TO_STORE+1);
+    if (EEPROM[address] != 0 && EEPROM[address] != 255) {
+      String currRecipe = readStringFromEEPROM(address); 
+      recipeNames[i] = currRecipe;
+    }
+  }
+}
+
+void writeRecipeNameToEEPROM(int index, String &recipeName) {
+  int address = RECIPE_NAMES_ADDRESS+index*(STRING_LENGTH_TO_STORE+1);
+  writeStringToEEPROM(address, recipeName);
+  for (int i = address; i < address+10; i++) {
+    Serial.println(EEPROM[i]);
+  }
 }
