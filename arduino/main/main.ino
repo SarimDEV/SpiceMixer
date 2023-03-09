@@ -64,6 +64,7 @@ const int AMOUNT_RECIPES = 5;
 const int AMOUNT_SPICES_PER_RECIPE = 6;
 const int STRING_LENGTH_TO_STORE = 15;
 int num_recipes = 0;
+int deleteIndex = 0;
 
 String recipeNames[AMOUNT_RECIPES] = { "" };
 int recipeInformation[AMOUNT_RECIPES][AMOUNT_SPICES_PER_RECIPE][2]; 
@@ -125,6 +126,7 @@ int settings_dims[] = {240, 0, 330-240, 40};
 const int CONFIG_ARR_ADDRESS = 0; 
 const int RECIPE_INFO_ADDRESS = 100;
 const int RECIPE_NAMES_ADDRESS = 800;
+const int DELETE_RECIPE_ADDRESS = 25;
 
 void setup() {
   Serial.begin(9600);
@@ -142,33 +144,16 @@ void setup() {
   }
 
   successBleScreen("Hello! :)", 1000);
-
-
-  for (int i = 0; i < 1024; i++) { // use this for loop to reset EEPROM memory
-    EEPROM[i] = 255;
-  }
-
-  EEPROM_readAnything(CONFIG_ARR_ADDRESS, configArr); // int arr takes up 24 bytes, starting at CONFIG_ARR_ADDRESS
-
-  for (int i = 0; i < NUM_CONTAINERS; i++) {
-    if (configArr[i] != 0 && configArr[i] != -1 && configArr[i] != 255){
-      numContainers++;
-    } 
-  }
-
-  EEPROM_readAnything(RECIPE_INFO_ADDRESS, recipeInformation); // 3d int array takes up 100 bytes, starting at RECIPE_INFO_ADDRESS
+  // clearEEPROM();
+  
+  loadConfigArrFromEEPROM(); // int arr takes up 24 bytes, starting at CONFIG_ARR_ADDRESS
   loadRecipeNamesFromEEPROM(); // string array, starting at RECIPE_NAMES_ADDRESS, takes up 50 bytes
+  loadRecipeInformationFromEEPROM(); // 3d int array takes up 100 bytes, starting at RECIPE_INFO_ADDRESS
 
-  for (int i = 0; i < AMOUNT_RECIPES; i++){
-    if (recipeInformation[i][0][1] != 0 && recipeInformation[i][0][1] != -1) {
-      Serial.println(recipeInformation[i][0][1]);
-      num_recipes++;
-    }
+  deleteIndex = EEPROM[DELETE_RECIPE_ADDRESS];
+  if (deleteIndex == 255 || deleteIndex == -1) {
+    deleteIndex = 0;
   }
-
-  Serial.println("num recipes");
-  Serial.println(num_recipes);
-
 
   if (num_recipes <= 0 ) {
     screenState = 3;
@@ -176,7 +161,6 @@ void setup() {
   } else {
     homeScreen();
   }
-
 }
 
 void loop() {
@@ -203,7 +187,6 @@ void loop() {
 
   if (dataType == "C") {
     Serial.println("configuring machine...");
-    // digitalWrite(13, HIGH); // switch ON LED
 
     numContainers = configurationParser(data, configArr);
     Serial.println(numContainers);
@@ -222,7 +205,6 @@ void loop() {
 
   if (dataType == "N") {
     Serial.println("parsing recipe data...");
-    // digitalWrite(13, HIGH); // switch ON LED
 
     String ingredients = getValue(data, ';', 0);
     String spiceName = getValue(data, ';', 1);
@@ -230,16 +212,22 @@ void loop() {
 
     int index = 0;
     if (num_recipes == AMOUNT_RECIPES) {
-      recipeParser(ingredients, recipeInformation[0]);
-      recipeNames[0] = spiceName;
+      recipeParser(ingredients, recipeInformation[deleteIndex]);
+      recipeNames[deleteIndex] = spiceName;
+      index = deleteIndex;
+      deleteIndex++;
+      if (deleteIndex >= AMOUNT_RECIPES) {
+        deleteIndex = 0;
+      }
+      EEPROM[DELETE_RECIPE_ADDRESS] = deleteIndex;
     } else {
-      bool boolean = true;
-      while (index < AMOUNT_RECIPES && boolean == true) {
+      // bool boolean = true;
+      while (index < AMOUNT_RECIPES) {
         if (recipeNames[index] == "") {
           recipeParser(ingredients, recipeInformation[index]);
           recipeNames[index] = spiceName;
           num_recipes++;
-          boolean = false; // using this to break out of the loop instead of using break
+          break; // using this to break out of the loop instead of using break
         }
         else {
           index++;
@@ -249,13 +237,6 @@ void loop() {
     
     EEPROM_writeAnything(RECIPE_INFO_ADDRESS, recipeInformation);
     writeRecipeNameToEEPROM(index, spiceName);
-    // loadRecipeNamesFromEEPROM();
-
-    // Serial.println("look at recipe names..");
-    // for (int i = 0; i < 5; i++) {
-    //   Serial.println(recipeNames[i]);
-    // }
-    // Serial.println("done");
 
     dataType = "";
     data = "";
@@ -337,6 +318,11 @@ void navigation(int px, int py) {
         homeScreen();
         screenState  = 0;
       }
+    }
+    else if (px>dispenseBtn_dims[1]&& px<dispenseBtn_dims[3]+dispenseBtn_dims[1] && py>dispenseBtn_dims[0] && py<dispenseBtn_dims[2]+dispenseBtn_dims[0]) {
+      clearEEPROM();
+      welcomeScreen();
+      screenState  = 3;
     }
   }
   else if (screenState == 3) { // welcome screen visible
@@ -436,8 +422,16 @@ void dispenseBtn(){
   tft.setCursor(tft.width()/2+50, 70);
   tft.setTextColor(WHITE);
   tft.println("Dispense");
-
 }
+
+void eraseBtn(){
+  tft.fillRect(dispenseBtn_dims[0],dispenseBtn_dims[1],dispenseBtn_dims[2],dispenseBtn_dims[3],DARKGRAY);
+   tft.setFont(&FreeSans9pt7b);
+  tft.setCursor(tft.width()/2+50, 70);
+  tft.setTextColor(WHITE);
+  tft.println("Reset");
+}
+
 void dispensingBtn(){
   //tft.fillRect(dispenseBtn_dims[0],dispenseBtn_dims[1],dispenseBtn_dims[2],dispenseBtn_dims[3],GRAY);
    tft.fillScreen(BACKGROUND);
@@ -483,6 +477,8 @@ void configurationScreen() {
   tft.println("< Configuration");
   tft.setFont(&FreeSans9pt7b);
 
+  eraseBtn();
+
   if (numContainers > 0) {
     tft.setCursor(30, 100);
     tft.setTextColor(BLACK);
@@ -502,7 +498,7 @@ void configurationScreen() {
   } else {
     tft.setCursor(35, tft.height()/2);
     tft.setTextColor(DARKGRAY);
-    tft.println("Configure the device using bluetooth!");
+    tft.println("Configure the device via bluetooth!");
   }
 }
 
@@ -570,12 +566,6 @@ int recipeParser(String data, int arr[][2]) {
     arr[i][1] = 0;
   }
 
-  // for (int i = 0; i < AMOUNT_SPICES_PER_RECIPE; i++) {
-  //   Serial.println(arr[i][0]);
-  //   Serial.println(arr[i][1]);
-  //   Serial.println();
-  // }
-
   return index;
 }
 
@@ -633,6 +623,34 @@ String readStringFromEEPROM(int addrOffset) {
   return buffer;
 }
 
+void writeRecipeNameToEEPROM(int index, String &recipeName) {
+  int address = RECIPE_NAMES_ADDRESS+index*(STRING_LENGTH_TO_STORE+1);
+  writeStringToEEPROM(address, recipeName);
+  for (int i = address; i < address+10; i++) {
+    Serial.println(EEPROM[i]);
+  }
+}
+
+void clearEEPROM() {
+  for (int i = 0; i < 1024; i++) { // use this for loop to reset EEPROM memory
+    EEPROM[i] = 255;
+  }
+  for (int i = 0; i < AMOUNT_RECIPES; i++){
+    recipeNames[i] = "";
+    for (int j = 0; j < AMOUNT_SPICES_PER_RECIPE; j++) {
+      recipeInformation[i][j][0] = 0;
+      recipeInformation[i][j][1] = 0;
+    }
+  }
+  for (int i = 0; i < NUM_CONTAINERS; i++) {
+    configArr[i] = 0;
+  }
+  deleteIndex = 0;
+  num_recipes = 0;
+  recipe_index = 0;
+  numContainers = 0;
+}
+
 void loadRecipeNamesFromEEPROM() {
   for (int i = 0; i < AMOUNT_RECIPES; i++) {
     int address = RECIPE_NAMES_ADDRESS+i*(STRING_LENGTH_TO_STORE+1);
@@ -643,10 +661,21 @@ void loadRecipeNamesFromEEPROM() {
   }
 }
 
-void writeRecipeNameToEEPROM(int index, String &recipeName) {
-  int address = RECIPE_NAMES_ADDRESS+index*(STRING_LENGTH_TO_STORE+1);
-  writeStringToEEPROM(address, recipeName);
-  for (int i = address; i < address+10; i++) {
-    Serial.println(EEPROM[i]);
+void loadRecipeInformationFromEEPROM() {
+  EEPROM_readAnything(RECIPE_INFO_ADDRESS, recipeInformation); 
+  for (int i = 0; i < AMOUNT_RECIPES; i++){
+    if (recipeInformation[i][0][1] != 0 && recipeInformation[i][0][1] != -1) {
+      Serial.println(recipeInformation[i][0][1]);
+      num_recipes++;
+    }
+  }
+}
+
+void loadConfigArrFromEEPROM() {
+  EEPROM_readAnything(CONFIG_ARR_ADDRESS, configArr); 
+  for (int i = 0; i < NUM_CONTAINERS; i++) {
+    if (configArr[i] != 0 && configArr[i] != -1 && configArr[i] != 255){
+      numContainers++;
+    } 
   }
 }
