@@ -2,9 +2,9 @@
 #include <AccelStepper.h>
 
 // Define pin connections
-const int dirPin = 2;
-const int stepPin = 3;
-const int linPin = 4;
+const int dirPin = 22;
+const int stepPin = 23;
+const int linPin = 29;
 
 // Define motor interface type
 #define motorInterfaceType 1
@@ -15,8 +15,8 @@ AccelStepper myStepper(motorInterfaceType, stepPin, dirPin);
 ///DUMMY DATA
 int containerConfig[3] = {1,4,7};
 int recipeInfo[4][2] = { 
-  {1,0},
-  {7,4},
+  {4,0},
+  {7,0},
   {1,0},
   {4,0}
 };
@@ -30,12 +30,12 @@ void setup() {
 	// set the maximum speed, acceleration factor,
 	// initial speed and the target position
 	myStepper.setMaxSpeed(500);
-	myStepper.setAcceleration(800);
+	myStepper.setAcceleration(1000);
 	myStepper.setSpeed(500);
  
   Serial.begin(9600);
   dispense(recipeInfo);
-  myStepper.moveTo(0);
+  // myStepper.moveTo(0);
   pinMode(linPin, OUTPUT);
 }
 

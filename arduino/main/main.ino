@@ -12,7 +12,7 @@
 
 // For the Adafruit shield, these are the default.
 #define TFT_DC 9
-#define TFT_CS 10
+#define TFT_CS 53
 
 #define YP A2  // must be an analog pin, use "An" notation!
 #define XM A3  // must be an analog pin, use "An" notation!
