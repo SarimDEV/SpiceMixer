@@ -15,9 +15,9 @@ AccelStepper myStepper(motorInterfaceType, stepPin, dirPin);
 ///DUMMY DATA
 int containerConfig[3] = {1,4,7};
 int recipeInfo[4][2] = { 
-  {4,0},
-  {7,0},
-  {1,0},
+  {4,1},
+  {7,1},
+  {1,1},
   {4,0}
 };
 const int steps = -133.0*2;
@@ -35,7 +35,7 @@ void setup() {
  
   Serial.begin(9600);
   dispense(recipeInfo);
-  // myStepper.moveTo(0);
+  myStepper.moveTo(0);
   pinMode(linPin, OUTPUT);
 }
 

@@ -9,6 +9,7 @@
 #include <avr/pgmspace.h>
 #include <EEPROM.h>
 #include "EEPROMAnything.h"
+#include <AccelStepper.h>
 
 // For the Adafruit shield, these are the default.
 #define TFT_DC 9
@@ -36,6 +37,15 @@
 #define CYAN 0x5D14
 #define WHITE 0xFFFF
 
+#define motorInterfaceType 1
+
+const int dirPin = 22;
+const int stepPin = 23;
+const int linPin = 29;
+
+// Creates an instance
+AccelStepper myStepper(motorInterfaceType, stepPin, dirPin);
+
 // Use hardware SPI (on Uno, #13, #12, #11) and the above for CS/DC
 Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC);
 // If using the breakout, change pins as desired
@@ -43,7 +53,8 @@ Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC);
 
 TouchScreen ts = TouchScreen(XP, YP, XM, YM, 300);
 
-SoftwareSerial HM10(2, 3); // RX = 0, TX = 1
+SoftwareSerial HM10(10, 11); // RX(green) = 0, TX(yellow) = 1 
+//WHITE IS 3, ORANGE IS 2
 
 char appData;
 String inData = "";
@@ -52,7 +63,7 @@ String rawData = "";
 String dataType = "";
 String data = "";
 
-const int NUM_CONTAINERS = 12;
+const int NUM_CONTAINERS = 3;
 int configArr[NUM_CONTAINERS] = { 0 };
 int numContainers = 0;
 
@@ -68,6 +79,11 @@ int deleteIndex = 0;
 
 String recipeNames[AMOUNT_RECIPES] = { "" };
 int recipeInformation[AMOUNT_RECIPES][AMOUNT_SPICES_PER_RECIPE][2]; 
+
+const int steps = -133.0*2;
+int spiceLocArray[NUM_CONTAINERS]={-1, -1, -1};
+
+int prev = 0;
 
 const char string_0[] PROGMEM = "Garlic powder";
 const char string_1[] PROGMEM = "Cinnamon";
@@ -130,10 +146,17 @@ const int DELETE_RECIPE_ADDRESS = 25;
 
 void setup() {
   Serial.begin(9600);
-  Serial.println("HM10 serial started at 9600");
   HM10.begin(9600); // set HM10 serial at 9600 baud rate
+  Serial.println("HM10 serial started at 9600");
+  
   tft.begin();
   tft.setRotation(3);
+
+  myStepper.setMaxSpeed(500);
+	myStepper.setAcceleration(1000);
+	myStepper.setSpeed(500);
+  myStepper.moveTo(0);
+  pinMode(linPin, OUTPUT);
 
   // initialize our 3d array as 0s
   for (int i = 0; i < AMOUNT_RECIPES; i++){
@@ -227,7 +250,7 @@ void loop() {
           recipeParser(ingredients, recipeInformation[index]);
           recipeNames[index] = spiceName;
           num_recipes++;
-          break; // using this to break out of the loop instead of using break
+          break; 
         }
         else {
           index++;
@@ -243,7 +266,8 @@ void loop() {
 
     Serial.println("successfully saved recipe!");
     successBleScreen("Saved recipe information!", 3000);
-
+    
+    recipe_index = index;
     recipeScreen(recipeInformation[index], recipeNames[index]);
     screenState = 1;
   }
@@ -258,6 +282,9 @@ void loop() {
   // Scale from ~0->1000 to tft.width using the calibration #'s
   p.x = map(p.x, TS_MINX, TS_MAXX, 0, tft.height());
   p.y = map(p.y, TS_MINY, TS_MAXY,  tft.width(),0);
+
+  // poll stepper
+  myStepper.run();
 
   // Serial.println("X AND Y");
   // Serial.println(p.x);
@@ -301,8 +328,30 @@ void navigation(int px, int py) {
     }
     //dispense btn
     else if (px>dispenseBtn_dims[1]&& px<dispenseBtn_dims[3]+dispenseBtn_dims[1] && py>dispenseBtn_dims[0] && py<dispenseBtn_dims[2]+dispenseBtn_dims[0]) {
-      dispensingBtn();
       screenState = 7;
+
+      // Serial.println("CLICKED DISPENSE BUTTON");
+      // Serial.print("RECIPE INDEX: ");
+      // Serial.println(recipe_index);
+      // Serial.println("RECIPE INFO");
+
+      // for (int i = 0; i < AMOUNT_SPICES_PER_RECIPE; i++) {
+      //   Serial.println(recipeInformation[recipe_index][i][0]);
+      // }
+
+      // Serial.println("SPICE LOC ARRAY 1");
+      // for (int i = 0; i < NUM_CONTAINERS; i++) {
+      //   Serial.println(spiceLocArray[i]);
+      // }
+      findSpiceLocations(recipe_index);
+
+      // Serial.println("SPICE LOC ARRAY 2");
+      // for (int i = 0; i < NUM_CONTAINERS; i++) {
+      //   Serial.println(spiceLocArray[i]);
+      // }
+
+      // Change direction once the motor reaches target position
+      rotateAndDispense(recipe_index);
     }
     else if (px>settings_dims[1]&& px<settings_dims[3]+settings_dims[1] && py>settings_dims[0] && py<settings_dims[2]+settings_dims[0]) {
       configurationScreen();
@@ -330,6 +379,9 @@ void navigation(int px, int py) {
       configurationScreen();
       screenState  = 2;
     }
+  }
+  else if (screenState == 7) { // dispense loading screen
+
   }
 }
 
@@ -432,16 +484,23 @@ void eraseBtn(){
   tft.println("Reset");
 }
 
-void dispensingBtn(){
+void dispensingBtn(double progress){
   //tft.fillRect(dispenseBtn_dims[0],dispenseBtn_dims[1],dispenseBtn_dims[2],dispenseBtn_dims[3],GRAY);
-   tft.fillScreen(BACKGROUND);
+  
+  double percentage = progress/NUM_CONTAINERS;
+  int amount = (tft.width()-100) * (percentage);
+
+  int percentageToShow = 100*percentage;
+  String progressAmount = String(percentageToShow) + "%";
+
+  tft.fillScreen(BACKGROUND);
   tft.setCursor(tft.width()/2-45, tft.height()/2);
   tft.setTextColor(DARKGRAY);
   tft.println("Dispensing");
-  tft.fillRoundRect(30, tft.height()*.7, tft.width()-100, 10, 2,GRAY);// update progress bar
-  tft.fillRoundRect(30, tft.height()*.7, 30, 10, 2,DARKGRAY);
+  tft.fillRoundRect(30, tft.height()*.7, tft.width()-100, 10, 2,GRAY);
+  tft.fillRoundRect(30, tft.height()*.7, amount, 10, 2, DARKGRAY); // update progress bar
   tft.setCursor(tft.width()-60, tft.height()*.7+10);
-  tft.println("5%");// update progress
+  tft.println(progressAmount); // update progress
 }
 
 void successBleScreen(String input, int ms){
@@ -618,17 +677,15 @@ String readStringFromEEPROM(int addrOffset) {
   }
   data[newStrLen] = '\0'; // !!! NOTE !!! Remove the space between the slash "/" and "0" (I've added a space because otherwise there is a display bug)
   String buffer = String(data);
-  Serial.println("BUFFER");
-  Serial.println(buffer);
   return buffer;
 }
 
 void writeRecipeNameToEEPROM(int index, String &recipeName) {
   int address = RECIPE_NAMES_ADDRESS+index*(STRING_LENGTH_TO_STORE+1);
   writeStringToEEPROM(address, recipeName);
-  for (int i = address; i < address+10; i++) {
-    Serial.println(EEPROM[i]);
-  }
+  // for (int i = address; i < address+10; i++) {
+  //   Serial.println(EEPROM[i]);
+  // }
 }
 
 void clearEEPROM() {
@@ -649,6 +706,7 @@ void clearEEPROM() {
   num_recipes = 0;
   recipe_index = 0;
   numContainers = 0;
+  prev = 0;
 }
 
 void loadRecipeNamesFromEEPROM() {
@@ -665,7 +723,7 @@ void loadRecipeInformationFromEEPROM() {
   EEPROM_readAnything(RECIPE_INFO_ADDRESS, recipeInformation); 
   for (int i = 0; i < AMOUNT_RECIPES; i++){
     if (recipeInformation[i][0][1] != 0 && recipeInformation[i][0][1] != -1) {
-      Serial.println(recipeInformation[i][0][1]);
+      // Serial.println(recipeInformation[i][0][1]);
       num_recipes++;
     }
   }
@@ -678,4 +736,46 @@ void loadConfigArrFromEEPROM() {
       numContainers++;
     } 
   }
+}
+
+void findSpiceLocations(int idx){ //map id to correct position
+  int index = 0;
+  for (int i = 0; i < AMOUNT_SPICES_PER_RECIPE; i++) { //hardcoded length
+    for(int j = 0; j < NUM_CONTAINERS; j++) { // find pos of spice
+      if (recipeInformation[idx][i][0] == configArr[j] && recipeInformation[idx][i][0] != 0) { //assume that spice is in container config, or else pos = 0
+        spiceLocArray[index] = j;
+        index++;
+      }
+    }
+  }
+}
+
+void rotateAndDispense(int idx){
+  dispensingBtn(0);
+  for (int i = 0; i < NUM_CONTAINERS; i++){
+    if (spiceLocArray[i] != -1 && myStepper.distanceToGo() == 0 && myStepper.currentPosition() == prev) {
+      myStepper.moveTo(spiceLocArray[i]*steps);
+      while (myStepper.distanceToGo() != 0) {
+        myStepper.run();
+      }
+      delay(1000);
+      for (int j = 0; j < recipeInformation[idx][i][1]*4; j++) { // dispense with linear actuator
+        digitalWrite(linPin, HIGH);
+        delay(1000);
+        digitalWrite(linPin, LOW);
+        delay(1000);
+      }
+      prev = spiceLocArray[i]*steps;
+    }
+    spiceLocArray[i] = -1;
+    dispensingBtn(i+1);
+    delay(1000);
+  }
+  myStepper.moveTo(0); // move to home
+  while (myStepper.distanceToGo() != 0) {
+    myStepper.run();
+  }
+  prev = 0;
+  homeScreen();
+  screenState = 0;
 }
